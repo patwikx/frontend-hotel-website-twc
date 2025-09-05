@@ -25,9 +25,10 @@ export default async function RootLayout({
     getBusinessUnits(), // This already returns BusinessUnitData[] with proper caching
   ]);
 
-  return (
+ return (
     <html lang="en">
-      <body style={{ backgroundColor: '#0a0e13', color: '#e2e8f0' }}>
+      {/* Change this to match your components' theme */}
+      <body style={{ backgroundColor: '#000000', color: '#e2e8f0' }}>
         <CssBaseline />
         <Header businessUnits={businessUnits} websiteConfig={websiteConfig} />
         <main style={{ paddingTop: '70px' }}>

@@ -107,7 +107,7 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
       return offer.images[0].image.originalUrl;
     }
     
-    return '/images/placeholder-offer.jpg';
+    return 'https://4b9moeer4y.ufs.sh/f/pUvyWRtocgCVhe0H6FL6dURkCuz3sloM2OqFTWgGJyQ01485';
   };
 
   const getImageAlt = (offer: SpecialOfferData): string => {

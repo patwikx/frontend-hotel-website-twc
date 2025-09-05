@@ -109,7 +109,7 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
   // Helper function to get property images
   const getPropertyImages = (property: BusinessUnitData): string[] => {
     if (!property.images || property.images.length === 0) {
-      return ['/images/default-property.jpg'];
+      return ['https://4b9moeer4y.ufs.sh/f/pUvyWRtocgCVeYTTA9NCtaEVU2mOPbBvzAkMch4GWLjTx1sZ'];
     }
     return property.images.map(img => img.image.originalUrl);
   };

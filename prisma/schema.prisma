@@ -720,10 +720,11 @@ model BusinessUnit {
   secondaryColor String?
 
   // Operational Settings
-  checkInTime       String @default("15:00")
+  checkInTime       String @default("14:00")
   checkOutTime      String @default("12:00")
   cancellationHours Int    @default(24)
   maxAdvanceBooking Int    @default(365)
+  operatingHours    Json? // Added as Json to allow flexible structure like { "monday": "9am-5pm" }
 
   // Website/CMS Settings
   slug             String  @unique
@@ -2910,7 +2911,10 @@ model ContactForm {
   userAgent String?
   referrer  String?
 
-  businessUnit BusinessUnit? @relation("ContactForms", fields: [businessUnitId], references: [id])
+  businessUnit     BusinessUnit?          @relation("ContactForms", fields: [businessUnitId], references: [id])
+  // NEW FIELDS
+  source           ContactSource          @default(WEBSITE)
+  preferredContact PreferredContactMethod @default(ANY)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -3370,4 +3374,57 @@ model GuestImage {
   @@unique([guestId, imageId])
   @@index([guestId, context, sortOrder])
   @@map("guest_images")
+}
+
+model AboutPage {
+  id             String  @id @default(uuid())
+  title          String  @default("Our Story")
+  content        String  @db.Text
+  mission        String? @db.Text
+  vision         String? @db.Text
+  values         String? @db.Text
+  history        String? @db.Text
+  foundedYear    Int?
+  totalEmployees Int?
+  awards         Json    @default("[]") // Store as JSON array of strings
+  certifications Json    @default("[]") // Store as JSON array of strings
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("about_pages")
+}
+
+model TeamMember {
+  id        String  @id @default(uuid())
+  name      String
+  position  String
+  bio       String? @db.Text
+  image     String? // URL to the image
+  linkedIn  String? // URL to LinkedIn profile
+  email     String?
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder, isActive])
+  @@map("team_members")
+}
+
+// Add this new ENUM
+enum ContactSource {
+  WEBSITE
+  EMAIL
+  PHONE
+  OTHER
+}
+
+// Add this new ENUM
+enum PreferredContactMethod {
+  EMAIL
+  PHONE
+  ANY
 }
