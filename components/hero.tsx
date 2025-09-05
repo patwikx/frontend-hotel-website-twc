@@ -7,33 +7,27 @@ import {
   Typography,
   Button,
   Stack,
-  useTheme,
-  useMediaQuery,
   IconButton,
 } from '@mui/material';
 import { ArrowForward, Star, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HeroData, incrementHeroView, incrementHeroClick } from '../lib/actions/heroes';
 
-// Enhanced dark theme matching the reference aesthetic
-const darkTheme = {
-  background: '#0a0e13',
-  surface: '#1a1f29',
-  surfaceHover: '#252a35',
-  primary: '#3b82f6',
-  primaryHover: '#2563eb',
-  text: '#e2e8f0',
-  textSecondary: '#94a3b8',
-  border: '#1e293b',
-  selected: '#1e40af',
-  selectedBg: 'rgba(59, 130, 246, 0.1)',
-  success: '#10b981',
-  successBg: 'rgba(16, 185, 129, 0.1)',
-  error: '#ef4444',
-  errorBg: 'rgba(239, 68, 68, 0.1)',
+// Pitch black theme matching other components
+const pitchBlackTheme = {
+  background: '#000000',
+  surface: '#000000',
+  surfaceHover: '#111111',
+  primary: '#000000',
+  primaryHover: '#ffffff',
+  text: '#ffffff',
+  textSecondary: '#6b7280',
+  border: '#1a1a1a',
+  selected: '#ffffff',
+  selectedBg: 'rgba(255, 255, 255, 0.08)',
+  shadow: 'rgba(255, 255, 255, 0.1)',
+  shadowMedium: 'rgba(255, 255, 255, 0.15)',
   warning: '#f59e0b',
-  warningBg: 'rgba(245, 158, 11, 0.1)',
-  errorHover: '#b91c1c',
 };
 
 interface HeroProps {
@@ -41,13 +35,24 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ heroesData }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const defaultHero: Partial<HeroData> = {
-    title: 'Experience Luxury Beyond Imagination',
+    title: 'Experience Luxury\nBeyond Imagination',
     subtitle: 'Award-winning luxury hospitality since 1995',
     description: 'Discover our world-class hotels and resorts across breathtaking locations. Where every moment becomes an unforgettable memory.',
     backgroundImage: 'https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop',
@@ -56,8 +61,8 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
     secondaryButtonText: 'View Special Offers',
     secondaryButtonUrl: '/offers',
     textAlignment: 'center',
-    overlayOpacity: 0.4,
-    textColor: darkTheme.text,
+    overlayOpacity: 0.6,
+    textColor: pitchBlackTheme.text,
   };
 
   const heroes = heroesData && heroesData.length > 0 ? heroesData : [defaultHero];
@@ -69,7 +74,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
       const interval = setInterval(() => {
         setDirection(1);
         setCurrentHeroIndex((prev) => (prev + 1) % heroes.length);
-      }, 6000); // Change hero every 6 seconds
+      }, 8000); // Change hero every 8 seconds
 
       return () => clearInterval(interval);
     }
@@ -111,25 +116,25 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
     setCurrentHeroIndex(index);
   };
 
-
+  // Mobile-friendly animation variants
   const contentVariants = {
     enter: {
-      y: 50,
       opacity: 0,
+      y: isMobile ? 30 : 50, // Reduced movement on mobile
     },
     center: {
-      y: 0,
       opacity: 1,
+      y: 0,
     },
     exit: {
-      y: -50,
       opacity: 0,
+      y: isMobile ? -30 : -50, // Reduced movement on mobile
     },
   };
 
   const backgroundVariants = {
     enter: {
-      scale: 1.1,
+      scale: 1.05, // Reduced scale change on mobile
       opacity: 0,
     },
     center: {
@@ -137,7 +142,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
       opacity: 1,
     },
     exit: {
-      scale: 0.9,
+      scale: 0.95, // Reduced scale change on mobile
       opacity: 0,
     },
   };
@@ -152,9 +157,11 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
+        backgroundColor: pitchBlackTheme.background,
+        width: '100%',
       }}
     >
-      {/* Animated Background Container */}
+      {/* Animated Background Container - Fixed for mobile */}
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={`background-${currentHeroIndex}`}
@@ -164,7 +171,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
           animate="center"
           exit="exit"
           transition={{
-            duration: 1.2,
+            duration: isMobile ? 0.8 : 1.2, // Faster on mobile
             ease: [0.4, 0.0, 0.2, 1],
           }}
           style={{
@@ -173,13 +180,10 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundImage: currentHero.backgroundImage ? `url(${currentHero.backgroundImage})` : `url(${defaultHero.backgroundImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
+            zIndex: 1,
           }}
         >
-          {/* Overlay */}
+          {/* Background Image - Fixed positioning for mobile */}
           <Box
             sx={{
               position: 'absolute',
@@ -187,8 +191,26 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: currentHero.overlayColor || `rgba(0, 0, 0, ${currentHero.overlayOpacity || 0.4})`,
-              zIndex: 1,
+              backgroundImage: currentHero.backgroundImage ? `url(${currentHero.backgroundImage})` : `url(${defaultHero.backgroundImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              // Fixed: Remove background-attachment: fixed on mobile to prevent disappearing
+              backgroundAttachment: isMobile ? 'scroll' : 'fixed',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Overlay - Enhanced for pitch black theme */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: currentHero.overlayColor || `rgba(0, 0, 0, ${currentHero.overlayOpacity || 0.6})`,
+              zIndex: 2,
             }}
           />
 
@@ -199,6 +221,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
               autoPlay
               muted
               loop
+              playsInline // Important for mobile
               sx={{
                 position: 'absolute',
                 top: 0,
@@ -206,7 +229,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
-                zIndex: 0,
+                zIndex: 1,
               }}
             >
               <source src={currentHero.backgroundVideo} type="video/mp4" />
@@ -226,14 +249,14 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
-                zIndex: 1,
+                zIndex: 2,
               }}
             />
           )}
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation arrows for multiple heroes */}
+      {/* Navigation arrows for multiple heroes - Mobile optimized */}
       {heroes.length > 1 && (
         <>
           <motion.div
@@ -245,15 +268,20 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
               onClick={handlePrevHero}
               sx={{
                 position: 'absolute',
-                left: 20,
+                left: { xs: 10, md: 20 },
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 4,
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                color: darkTheme.text,
+                backgroundColor: pitchBlackTheme.surface,
+                color: pitchBlackTheme.text,
+                border: `1px solid ${pitchBlackTheme.border}`,
                 backdropFilter: 'blur(10px)',
+                width: { xs: 40, md: 48 },
+                height: { xs: 40, md: 48 },
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  backgroundColor: pitchBlackTheme.primaryHover,
+                  borderColor: pitchBlackTheme.primaryHover,
+                  color: pitchBlackTheme.primary,
                   transform: 'translateY(-50%) scale(1.1)',
                 },
                 transition: 'all 0.3s ease',
@@ -272,15 +300,20 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
               onClick={handleNextHero}
               sx={{
                 position: 'absolute',
-                right: 20,
+                right: { xs: 10, md: 20 },
                 top: '50%',
                 transform: 'translateY(-50%)',
                 zIndex: 4,
-                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                color: darkTheme.text,
+                backgroundColor: pitchBlackTheme.surface,
+                color: pitchBlackTheme.text,
+                border: `1px solid ${pitchBlackTheme.border}`,
                 backdropFilter: 'blur(10px)',
+                width: { xs: 40, md: 48 },
+                height: { xs: 40, md: 48 },
                 '&:hover': {
-                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  backgroundColor: pitchBlackTheme.primaryHover,
+                  borderColor: pitchBlackTheme.primaryHover,
+                  color: pitchBlackTheme.primary,
                   transform: 'translateY(-50%) scale(1.1)',
                 },
                 transition: 'all 0.3s ease',
@@ -292,7 +325,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
         </>
       )}
 
-      {/* Hero indicators for multiple heroes */}
+      {/* Hero indicators for multiple heroes - Mobile optimized */}
       {heroes.length > 1 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -300,12 +333,12 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
           transition={{ delay: 0.7 }}
           style={{
             position: 'absolute',
-            bottom: 30,
+            bottom: isMobile ? 20 : 30,
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 4,
             display: 'flex',
-            gap: 12,
+            gap: isMobile ? 8 : 12,
           }}
         >
           {heroes.map((_, index) => (
@@ -315,12 +348,13 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
               style={{
-                width: 12,
-                height: 12,
+                width: isMobile ? 10 : 12,
+                height: isMobile ? 10 : 12,
                 borderRadius: '50%',
-                backgroundColor: index === currentHeroIndex ? darkTheme.primary : 'rgba(255, 255, 255, 0.5)',
+                backgroundColor: index === currentHeroIndex ? pitchBlackTheme.text : pitchBlackTheme.textSecondary,
                 cursor: 'pointer',
                 transition: 'background-color 0.3s ease',
+                border: `1px solid ${pitchBlackTheme.border}`,
               }}
             />
           ))}
@@ -329,12 +363,13 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
 
       {/* Animated Content Container */}
       <Container
-        maxWidth="lg"
+        maxWidth="xl"
         sx={{
           position: 'relative',
           zIndex: 3,
           textAlign: currentHero.textAlignment || 'center',
-          color: currentHero.textColor || darkTheme.text,
+          color: currentHero.textColor || pitchBlackTheme.text,
+          px: { xs: 2, md: 4 },
         }}
       >
         <AnimatePresence mode="wait" custom={direction}>
@@ -346,9 +381,9 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
             animate="center"
             exit="exit"
             transition={{
-              duration: 0.8,
+              duration: isMobile ? 0.6 : 0.8, // Faster on mobile
               ease: [0.4, 0.0, 0.2, 1],
-              delay: 0.2,
+              delay: isMobile ? 0.1 : 0.2, // Reduced delay on mobile
             }}
           >
             {currentHero.subtitle && (
@@ -356,7 +391,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4, duration: 0.6 }}
+                  transition={{ delay: isMobile ? 0.2 : 0.4, duration: 0.6 }}
                 >
                   <Stack 
                     direction="row" 
@@ -370,9 +405,9 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                         key={i}
                         initial={{ opacity: 0, rotate: -180 }}
                         animate={{ opacity: 1, rotate: 0 }}
-                        transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
+                        transition={{ delay: (isMobile ? 0.3 : 0.5) + i * 0.1, duration: 0.5 }}
                       >
-                        <Star sx={{ color: darkTheme.warning, fontSize: 24 }} />
+                        <Star sx={{ color: pitchBlackTheme.warning, fontSize: { xs: 20, md: 24 } }} />
                       </motion.div>
                     ))}
                   </Stack>
@@ -381,16 +416,18 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6, duration: 0.6 }}
+                  transition={{ delay: isMobile ? 0.4 : 0.6, duration: 0.6 }}
                 >
                   <Typography 
                     variant="body1" 
                     sx={{ 
-                      color: darkTheme.textSecondary, 
+                      color: pitchBlackTheme.textSecondary, 
                       mb: 3, 
                       textTransform: 'uppercase', 
                       fontWeight: 600, 
-                      letterSpacing: 2 
+                      letterSpacing: { xs: 1, md: 2 },
+                      fontSize: { xs: '0.75rem', md: '0.875rem' },
+                      fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                     }}
                   >
                     {currentHero.subtitle}
@@ -400,22 +437,22 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
             )}
 
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: isMobile ? 30 : 50 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
+              transition={{ delay: isMobile ? 0.2 : 0.3, duration: 0.8 }}
             >
               <Typography
                 variant="h1"
                 component="h1"
                 sx={{
-                  fontWeight: 900,
-                  mb: 3,
-                  textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-                  fontSize: isMobile ? '3rem' : '4.5rem',
-                  lineHeight: 1.1,
-                  color: currentHero.textColor || darkTheme.text,
+                  fontWeight: 700,
+                  mb: 4,
+                  textShadow: '2px 2px 8px rgba(0,0,0,0.8)',
+                  fontSize: { xs: '2.5rem', md: '4rem', lg: '5rem' },
+                  lineHeight: { xs: 1.1, md: 1.1 },
+                  color: currentHero.textColor || pitchBlackTheme.text,
                   textTransform: 'uppercase',
-                  letterSpacing: '-0.02em',
+                  letterSpacing: '0.02em',
                   fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                 }}
               >
@@ -423,7 +460,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                 {titleParts[1] && (
                   <>
                     <br />
-                    <Box component="span" sx={{ color: darkTheme.primary }}>
+                    <Box component="span" sx={{ color: pitchBlackTheme.textSecondary }}>
                       {titleParts[1]}
                     </Box>
                   </>
@@ -433,19 +470,19 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
 
             {currentHero.description && (
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: isMobile ? 20 : 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
+                transition={{ delay: isMobile ? 0.3 : 0.5, duration: 0.8 }}
               >
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   sx={{
                     mb: 5,
-                    color: darkTheme.textSecondary,
+                    color: pitchBlackTheme.textSecondary,
                     maxWidth: 600,
                     mx: currentHero.textAlignment === 'center' ? 'auto' : 0,
                     lineHeight: 1.6,
-                    fontSize: isMobile ? '1.25rem' : '1.5rem',
+                    fontSize: { xs: '1rem', md: '1.125rem' },
                     fontWeight: 400,
                   }}
                 >
@@ -456,9 +493,9 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
 
             {(currentHero.primaryButtonText || currentHero.secondaryButtonText) && (
               <motion.div
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: isMobile ? 30 : 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.8 }}
+                transition={{ delay: isMobile ? 0.4 : 0.7, duration: 0.8 }}
               >
                 <Stack
                   direction={isMobile ? 'column' : 'row'}
@@ -468,33 +505,37 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                 >
                   {currentHero.primaryButtonText && (
                     <motion.div
-                      whileHover={{ scale: 1.05, y: -5 }}
+                      whileHover={{ scale: isMobile ? 1.02 : 1.05, y: isMobile ? -2 : -5 }}
                       whileTap={{ scale: 0.95 }}
                       transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
                       <Button
-                        variant={currentHero.primaryButtonStyle === 'outlined' ? 'outlined' : 'contained'}
+                        variant="contained"
                         size="large"
                         endIcon={<ArrowForward />}
                         onClick={() => handleButtonClick(currentHero.primaryButtonUrl)}
                         sx={{
-                          px: 4,
-                          py: 2.5,
-                          fontSize: '1rem',
-                          fontWeight: 700,
-                          backgroundColor: currentHero.primaryButtonStyle === 'outlined' ? 'transparent' : darkTheme.primary,
-                          color: currentHero.primaryButtonStyle === 'outlined' ? currentHero.textColor : darkTheme.text,
-                          borderRadius: '8px',
-                          border: currentHero.primaryButtonStyle === 'outlined' ? `2px solid ${currentHero.textColor || darkTheme.text}` : 'none',
-                          borderColor: currentHero.primaryButtonStyle === 'outlined' ? currentHero.textColor || darkTheme.text : undefined,
-                          boxShadow: currentHero.primaryButtonStyle === 'outlined' ? 'none' : `0 8px 24px ${darkTheme.selectedBg}`,
+                          backgroundColor: pitchBlackTheme.primary,
+                          color: pitchBlackTheme.text,
+                          border: `2px solid ${pitchBlackTheme.text}`,
+                          px: { xs: 4, md: 5 },
+                          py: { xs: 2, md: 2.5 },
+                          fontSize: { xs: '0.8rem', md: '0.9rem' },
+                          fontWeight: 900,
+                          borderRadius: 0,
                           textTransform: 'uppercase',
-                          letterSpacing: '1px',
-                          minWidth: '200px',
+                          letterSpacing: '0.15em',
+                          minWidth: { xs: '180px', md: '200px' },
+                          fontFamily: '"Arial Black", "Helvetica", sans-serif',
+                          boxShadow: 'none',
                           '&:hover': {
-                            backgroundColor: currentHero.primaryButtonStyle === 'outlined' ? `rgba(255, 255, 255, 0.1)` : darkTheme.primaryHover,
-                            boxShadow: currentHero.primaryButtonStyle === 'outlined' ? 'none' : `0 12px 32px ${darkTheme.selectedBg}`,
-                            borderColor: currentHero.primaryButtonStyle === 'outlined' ? darkTheme.primary : undefined,
+                            backgroundColor: pitchBlackTheme.primaryHover,
+                            borderColor: pitchBlackTheme.primaryHover,
+                            color: pitchBlackTheme.primary,
+                            boxShadow: `0 4px 12px ${pitchBlackTheme.selectedBg}`,
+                            '& .MuiSvgIcon-root': {
+                              color: pitchBlackTheme.primary,
+                            },
                           },
                           transition: 'all 0.3s ease-in-out',
                         }}
@@ -506,33 +547,32 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                   
                   {currentHero.secondaryButtonText && (
                     <motion.div
-                      whileHover={{ scale: 1.05, y: -5 }}
+                      whileHover={{ scale: isMobile ? 1.02 : 1.05, y: isMobile ? -2 : -5 }}
                       whileTap={{ scale: 0.95 }}
                       transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
                       <Button
-                        variant={currentHero.secondaryButtonStyle === 'contained' ? 'contained' : 'outlined'}
+                        variant="outlined"
                         size="large"
                         onClick={() => handleButtonClick(currentHero.secondaryButtonUrl)}
                         sx={{
-                          px: 4,
-                          py: 2.5,
-                          fontSize: '1rem',
-                          fontWeight: 700,
-                          backgroundColor: currentHero.secondaryButtonStyle === 'contained' ? darkTheme.primary : 'transparent',
-                          borderColor: currentHero.secondaryButtonStyle === 'contained' ? undefined : darkTheme.text,
-                          color: currentHero.secondaryButtonStyle === 'contained' ? darkTheme.text : darkTheme.text,
-                          borderRadius: '8px',
+                          backgroundColor: 'transparent',
+                          borderColor: pitchBlackTheme.text,
+                          color: pitchBlackTheme.text,
+                          px: { xs: 4, md: 5 },
+                          py: { xs: 2, md: 2.5 },
+                          fontSize: { xs: '0.8rem', md: '0.9rem' },
+                          fontWeight: 900,
+                          borderRadius: 0,
                           borderWidth: 2,
-                          boxShadow: currentHero.secondaryButtonStyle === 'contained' ? `0 8px 24px ${darkTheme.selectedBg}` : 'none',
                           textTransform: 'uppercase',
-                          letterSpacing: '1px',
-                          minWidth: '200px',
+                          letterSpacing: '0.15em',
+                          minWidth: { xs: '180px', md: '200px' },
+                          fontFamily: '"Arial Black", "Helvetica", sans-serif',
                           '&:hover': {
-                            backgroundColor: currentHero.secondaryButtonStyle === 'contained' ? darkTheme.primaryHover : `rgba(255, 255, 255, 0.1)`,
-                            borderColor: currentHero.secondaryButtonStyle === 'contained' ? undefined : darkTheme.primary,
+                            backgroundColor: pitchBlackTheme.selectedBg,
+                            borderColor: pitchBlackTheme.text,
                             borderWidth: 2,
-                            boxShadow: currentHero.secondaryButtonStyle === 'contained' ? `0 12px 32px ${darkTheme.selectedBg}` : 'none',
                           },
                           transition: 'all 0.3s ease-in-out',
                         }}

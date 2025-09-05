@@ -9,8 +9,6 @@ import {
   CardMedia,
   CardContent,
   Button,
-  Stack,
-  Chip,
 } from '@mui/material';
 import {
   LocationOn,
@@ -19,39 +17,33 @@ import {
 import { motion } from 'framer-motion';
 import { BusinessUnitData } from '../types/properties';
 
-
-// Enhanced dark theme matching BusinessUnitSwitcher aesthetic
-const darkTheme = {
-  background: '#0a0e13',
-  surface: '#1a1f29',
-  surfaceHover: '#252a35',
-  primary: '#3b82f6',
-  primaryHover: '#2563eb',
-  text: '#e2e8f0',
-  textSecondary: '#94a3b8',
-  border: '#1e293b',
-  selected: '#1e40af',
-  selectedBg: 'rgba(59, 130, 246, 0.1)',
-  success: '#10b981',
-  successBg: 'rgba(16, 185, 129, 0.1)',
-  error: '#ef4444',
-  errorBg: 'rgba(239, 68, 68, 0.1)',
-  warning: '#f59e0b',
-  warningBg: 'rgba(245, 158, 11, 0.1)',
-  errorHover: '#b91c1c',
+// Pitch black theme with white hover effects
+const pitchBlackTheme = {
+  background: '#000000',
+  surface: '#000000',
+  surfaceHover: '#111111',
+  primary: '#000000',
+  primaryHover: '#ffffff',
+  text: '#ffffff',
+  textSecondary: '#6b7280',
+  border: '#1a1a1a',
+  selected: '#ffffff',
+  selectedBg: 'rgba(255, 255, 255, 0.08)',
+  shadow: 'rgba(255, 255, 255, 0.1)',
+  shadowMedium: 'rgba(255, 255, 255, 0.15)',
 };
 
-// Create motion variants for the animations
+// Create motion variants for the animations - mobile-friendly
 const cardVariants = {
   hiddenLeft: {
     opacity: 0,
-    x: -1200,
-    scale: 0.9
+    x: -100, // Reduced from -1200 to -100
+    scale: 0.95
   },
   hiddenRight: {
     opacity: 0,
-    x: 1200,
-    scale: 0.9
+    x: 100, // Reduced from 1200 to 100
+    scale: 0.95
   },
   visible: {
     opacity: 1,
@@ -67,6 +59,19 @@ interface PropertiesProps {
 const Properties: React.FC<PropertiesProps> = ({ properties }) => {
   // State to track current image index for each property
   const [currentImageIndex, setCurrentImageIndex] = useState<{ [key: string]: number }>({});
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Initialize image indices
   useEffect(() => {
@@ -96,7 +101,7 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
   // Helper function to get property location
   const getPropertyLocation = (property: BusinessUnitData): string => {
     const parts = [property.city, property.state, property.country]
-      .filter(part => part && part !== 'Philippines') // Don't show Philippines as it's default
+      .filter(part => part && part !== 'Philippines')
       .filter(Boolean);
     return parts.join(', ');
   };
@@ -104,7 +109,7 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
   // Helper function to get property images
   const getPropertyImages = (property: BusinessUnitData): string[] => {
     if (!property.images || property.images.length === 0) {
-      return ['/images/default-property.jpg']; // Fallback image
+      return ['/images/default-property.jpg'];
     }
     return property.images.map(img => img.image.originalUrl);
   };
@@ -115,14 +120,24 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
 
   if (!properties || properties.length === 0) {
     return (
-      <Box sx={{ py: 16, textAlign: 'center', backgroundColor: darkTheme.background, color: darkTheme.text }}>
+      <Box sx={{ 
+        py: { xs: 8, md: 16 }, 
+        textAlign: 'center', 
+        backgroundColor: pitchBlackTheme.background, 
+        color: pitchBlackTheme.text,
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+      }}>
         <Container maxWidth="xl">
           <Typography 
-            variant="h4" 
             sx={{
-              color: darkTheme.textSecondary,
-              fontSize: '1.5rem',
-              fontWeight: 600,
+              fontWeight: 700,
+              fontSize: { xs: '1.25rem', md: '1.5rem' },
+              color: pitchBlackTheme.textSecondary,
+              textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
             No properties available at the moment.
@@ -135,52 +150,52 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
   return (
     <Box 
       sx={{ 
-        py: { xs: 8, md: 16 },
-        backgroundColor: darkTheme.background,
+        backgroundColor: pitchBlackTheme.background,
         position: 'relative',
-        color: darkTheme.text,
+        color: pitchBlackTheme.text,
+        minHeight: '100vh',
+        width: '100%',
+        overflow: 'hidden', // Prevent horizontal scroll on mobile
       }}
     >
-      <Container maxWidth="xl">
-        {/* Header Section */}
-        <Box sx={{ textAlign: 'center', mb: { xs: 8, md: 12 } }}>
+      {/* Header Section */}
+      <Container maxWidth="xl" sx={{ pt: { xs: 8, md: 16 }, pb: { xs: 6, md: 12 } }}>
+        <Box sx={{ textAlign: 'center' }}>
           <Typography
-            variant="overline"
             sx={{
-              color: darkTheme.textSecondary,
-              fontWeight: 700,
-              letterSpacing: 3,
+              color: pitchBlackTheme.textSecondary,
               fontSize: '0.875rem',
+              fontWeight: 500,
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
               mb: 2,
-              display: 'block',
-              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
             }}
           >
-            Premium Properties
+            Premium Hospitality
           </Typography>
           <Typography
             sx={{
-              fontWeight: 900,
-              fontSize: { xs: '2.75rem', md: '4rem', lg: '5rem' },
-              lineHeight: { xs: 0.9, md: 0.85 },
-              color: darkTheme.text,
-              mb: 4,
-              letterSpacing: '-0.02em',
+              fontWeight: 700,
+              fontSize: { xs: '2.5rem', md: '4rem', lg: '5rem' },
+              color: pitchBlackTheme.text,
               textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+              lineHeight: { xs: 1.1, md: 1.1 },
               fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+              mb: 4,
             }}
           >
-            HOTEL & RESORTS
+            Hotel & Resorts
           </Typography>
           <Typography
             sx={{
-              color: darkTheme.textSecondary,
-              fontSize: { xs: '1.125rem', md: '1.25rem' },
+              color: pitchBlackTheme.textSecondary,
+              fontSize: { xs: '1rem', md: '1.125rem' },
               lineHeight: 1.6,
               maxWidth: '600px',
               mx: 'auto',
               fontWeight: 400,
-              mt: 3,
             }}
           >
             Discover world-class hotels and resorts, each offering unique experiences 
@@ -189,15 +204,8 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
         </Box>
       </Container>
 
-      {/* Properties List - Full Width */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 0,
-          width: '100%',
-        }}
-      >
+      {/* Properties List */}
+      <Box sx={{ width: '100%' }}>
         {properties.map((property, index) => {
           const isEven = index % 2 === 0;
           const propertyImages = getPropertyImages(property);
@@ -207,32 +215,35 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
           return (
             <motion.div
               key={property.id}
-              initial={isEven ? "hiddenLeft" : "hiddenRight"}
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
+              initial={isMobile ? "visible" : (isEven ? "hiddenLeft" : "hiddenRight")} // No animation on mobile
+              whileInView={isMobile ? "visible" : "visible"} // Always visible on mobile
+              viewport={{ once: true, margin: "-20px", amount: 0.1 }} // More lenient viewport settings
               variants={cardVariants}
               transition={{
-                duration: 0.8,
+                duration: isMobile ? 0 : 0.6, // No animation duration on mobile
                 ease: [0.25, 0.1, 0.25, 1],
                 type: "tween"
+              }}
+              style={{ 
+                width: '100%',
+                // Ensure visibility on mobile
+                opacity: isMobile ? 1 : undefined,
+                transform: isMobile ? 'none' : undefined,
               }}
             >
               <Card
                 sx={{
-                  backgroundColor: darkTheme.surface,
+                  backgroundColor: pitchBlackTheme.surface,
                   borderRadius: 0,
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                  boxShadow: 'none',
                   overflow: 'hidden',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: 'all 0.3s ease',
                   border: 'none',
-                  width: '100vw',
-                  position: 'relative',
-                  left: '50%',
-                  right: '50%',
-                  marginLeft: '-50vw',
-                  marginRight: '-50vw',
+                  width: '100%',
+                  mb: 0,
+                  // Ensure card is visible and animated properly
+                  opacity: 1,
                   '&:hover': {
-                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
                     '& .property-image': {
                       transform: 'scale(1.05)',
                     },
@@ -246,52 +257,68 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
                       xs: 'column', 
                       md: isEven ? 'row' : 'row-reverse' 
                     },
-                    minHeight: { xs: 'auto', md: '500px' },
-                    maxWidth: '100%',
+                    minHeight: { xs: '600px', md: '600px' },
+                    width: '100%',
                   }}
                 >
-                  {/* Image Section with Slideshow */}
+                  {/* Image Section */}
                   <Box 
                     sx={{ 
                       flex: { xs: '1', md: '0 0 50%' },
                       position: 'relative',
                       overflow: 'hidden',
-                      height: { xs: '350px', md: 'auto' },
-                      minHeight: { md: '100%' },
+                      height: { xs: '400px', md: 'auto' },
+                      minHeight: { xs: '400px', md: '100%' },
+                      width: '100%',
                     }}
                   >
-                    {/* Image Container */}
-                    <Box
+                    <CardMedia
+                      component="img"
+                      image={propertyImages[currentIndex]}
+                      alt={property.images?.[currentIndex]?.image?.altText || `${property.displayName || property.name} - Image ${currentIndex + 1}`}
+                      className="property-image"
                       sx={{
-                        position: 'relative',
                         width: '100%',
                         height: '100%',
+                        objectFit: 'cover',
+                        transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                      }}
+                    />
+
+                    {/* Property Type Badge */}
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 24,
+                        [isEven ? 'right' : 'left']: 24,
+                        backgroundColor: pitchBlackTheme.surface,
+                        border: `1px solid ${pitchBlackTheme.border}`,
+                        px: 3,
+                        py: 1.5,
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          backgroundColor: pitchBlackTheme.primaryHover,
+                          borderColor: pitchBlackTheme.primaryHover,
+                          '& .type-text': {
+                            color: pitchBlackTheme.primary,
+                          },
+                        },
                       }}
                     >
-                      <CardMedia
-                        component="img"
-                        image={propertyImages[currentIndex]}
-                        alt={property.images[currentIndex]?.image.altText || `${property.displayName || property.name} - Image ${currentIndex + 1}`}
-                        className="property-image"
-                        sx={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                      <Typography 
+                        className="type-text"
+                        sx={{ 
+                          fontWeight: 700,
+                          color: pitchBlackTheme.text,
+                          fontSize: '0.875rem',
+                          textTransform: 'uppercase',
+                          letterSpacing: '1px',
+                          transition: 'color 0.3s ease',
+                          fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                         }}
-                      />
-
-                      {/* Image Overlay for Better Text Visibility */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          width: '100%',
-                          height: '100%',
-                          background: 'linear-gradient(45deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.05) 100%)',
-                        }}
-                      />
+                      >
+                        {getPropertyTypeDisplay(property.propertyType)}
+                      </Typography>
                     </Box>
 
                     {/* Image Indicators */}
@@ -319,12 +346,12 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
                               height: 10,
                               borderRadius: '50%',
                               backgroundColor: imgIndex === currentIndex 
-                                ? darkTheme.text 
-                                : darkTheme.textSecondary,
+                                ? pitchBlackTheme.text 
+                                : pitchBlackTheme.textSecondary,
                               cursor: 'pointer',
                               transition: 'all 0.3s ease',
                               '&:hover': {
-                                backgroundColor: darkTheme.text,
+                                backgroundColor: pitchBlackTheme.text,
                                 transform: 'scale(1.2)',
                               },
                             }}
@@ -332,38 +359,6 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
                         ))}
                       </Box>
                     )}
-                    
-                    {/* Property Type Badge */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 24,
-                        [isEven ? 'right' : 'left']: 24,
-                        backgroundColor: darkTheme.surface,
-                        px: 3,
-                        py: 1.5,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                        minWidth: '60px',
-                        zIndex: 2,
-                        borderRadius: '8px',
-                        border: `1px solid ${darkTheme.border}`,
-                      }}
-                    >
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          fontWeight: 700,
-                          color: darkTheme.text,
-                          fontSize: '0.875rem',
-                          textTransform: 'capitalize',
-                        }}
-                      >
-                        {getPropertyTypeDisplay(property.propertyType)}
-                      </Typography>
-                    </Box>
                   </Box>
 
                   {/* Content Section */}
@@ -372,32 +367,33 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
                       flex: { xs: '1', md: '0 0 50%' },
                       display: 'flex',
                       flexDirection: 'column',
-                      maxWidth: '100%',
+                      width: '100%',
                     }}
                   >
                     <CardContent 
                       sx={{ 
-                        p: { xs: 4, md: 8 },
+                        p: { xs: 4, md: 6, lg: 8 },
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
                         textAlign: { xs: 'center', md: isEven ? 'left' : 'right' },
-                        maxWidth: '100%',
+                        width: '100%',
                       }}
                     >
                       {/* Property Name */}
                       <Typography
                         sx={{
-                          fontWeight: 900,
+                          fontWeight: 700,
                           fontSize: { xs: '2rem', md: '2.5rem', lg: '3rem' },
-                          color: darkTheme.text,
+                          color: pitchBlackTheme.text,
                           mb: 3,
-                          letterSpacing: '-0.02em',
-                          lineHeight: 0.9,
+                          letterSpacing: '0.02em',
+                          lineHeight: 1.1,
                           textTransform: 'uppercase',
                           fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                           wordBreak: 'break-word',
+                          hyphens: 'auto',
                         }}
                       >
                         {property.displayName || property.name}
@@ -413,19 +409,21 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
                             xs: 'center', 
                             md: isEven ? 'flex-start' : 'flex-end' 
                           },
+                          flexWrap: 'wrap',
+                          gap: 1,
                         }}>
                           <LocationOn sx={{ 
-                            color: darkTheme.textSecondary,
-                            mr: 1,
+                            color: pitchBlackTheme.textSecondary,
                             fontSize: 20,
                           }} />
                           <Typography 
                             sx={{ 
-                              color: darkTheme.textSecondary,
+                              color: pitchBlackTheme.textSecondary,
                               fontWeight: 600,
                               fontSize: '1rem',
                               textTransform: 'uppercase',
                               letterSpacing: '1px',
+                              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                             }}
                           >
                             {location}
@@ -436,12 +434,12 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
                       {/* Description */}
                       <Typography
                         sx={{
-                          color: darkTheme.textSecondary,
-                          fontSize: { xs: '1.1rem', md: '1.2rem' },
+                          color: pitchBlackTheme.textSecondary,
+                          fontSize: { xs: '1rem', md: '1.125rem' },
                           lineHeight: 1.6,
                           mb: 5,
                           fontWeight: 400,
-                          maxWidth: '500px',
+                          maxWidth: { xs: '100%', md: '500px' },
                           mx: { xs: 'auto', md: isEven ? '0' : 'auto' },
                           ml: { md: isEven ? '0' : 'auto' },
                         }}
@@ -460,23 +458,31 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
                         }}
                       >
                         <Button
-                          endIcon={<ArrowForward sx={{ fontSize: 18 }} />}
+                          endIcon={<ArrowForward sx={{ fontSize: 16, transition: 'color 0.3s ease' }} />}
                           sx={{
-                            backgroundColor: darkTheme.primary,
-                            color: 'white',
-                            px: 6,
+                            backgroundColor: pitchBlackTheme.primary,
+                            color: pitchBlackTheme.text,
+                            border: `2px solid ${pitchBlackTheme.text}`,
+                            px: 5,
                             py: 2.5,
-                            fontSize: '1rem',
-                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            fontWeight: 900,
                             textTransform: 'uppercase',
-                            letterSpacing: '1px',
-                            borderRadius: '8px',
-                            minWidth: '200px',
-                            transition: 'all 0.3s ease',
+                            letterSpacing: '0.15em',
+                            borderRadius: 0,
+                            minWidth: '160px',
+                            fontFamily: '"Arial Black", "Helvetica", sans-serif',
+                            transition: 'all 0.2s ease',
+                            whiteSpace: 'nowrap',
                             '&:hover': {
-                              backgroundColor: darkTheme.primaryHover,
-                              transform: 'translateY(-3px)',
-                              boxShadow: '0 12px 24px rgba(59, 130, 246, 0.3)',
+                              backgroundColor: pitchBlackTheme.primaryHover,
+                              borderColor: pitchBlackTheme.primaryHover,
+                              color: pitchBlackTheme.primary,
+                              transform: 'translateY(-1px)',
+                              boxShadow: `0 4px 12px ${pitchBlackTheme.selectedBg}`,
+                              '& .MuiSvgIcon-root': {
+                                color: pitchBlackTheme.primary,
+                              },
                             },
                           }}
                           href={`/properties/${property.slug}`}
@@ -494,24 +500,24 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
         })}
       </Box>
 
-      {/* Bottom Section */}
+      {/* Bottom CTA Section */}
       <Container maxWidth="xl">
         <Box 
           sx={{ 
             textAlign: 'center', 
-            mt: { xs: 4, md: 8 },
-            py: { xs: 6, md: 8 },
+            py: { xs: 8, md: 12 },
           }}
         >
           <Typography
             sx={{
-              fontWeight: 900,
+              fontWeight: 700,
               fontSize: { xs: '2.5rem', md: '4rem' },
-              color: darkTheme.text,
+              color: pitchBlackTheme.text,
               mb: 4,
               textTransform: 'uppercase',
-              letterSpacing: '-0.02em',
+              letterSpacing: '0.02em',
               lineHeight: 0.9,
+              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
             Ready for your next
@@ -520,28 +526,36 @@ const Properties: React.FC<PropertiesProps> = ({ properties }) => {
           </Typography>
           
           <Button
+            endIcon={<ArrowForward />}
             component="a"
             href="/reservations"
             sx={{
-              backgroundColor: darkTheme.primary,
-              color: 'white',
+              backgroundColor: pitchBlackTheme.primary,
+              color: pitchBlackTheme.text,
+              border: `2px solid ${pitchBlackTheme.text}`,
               px: 10,
               py: 3.5,
               fontSize: '1rem',
               fontWeight: 700,
               textTransform: 'uppercase',
               letterSpacing: '1px',
-              borderRadius: '8px',
+              borderRadius: 0,
               mt: 4,
               transition: 'all 0.3s ease',
+              whiteSpace: 'nowrap',
               '&:hover': {
-                backgroundColor: darkTheme.primaryHover,
+                backgroundColor: pitchBlackTheme.primaryHover,
+                borderColor: pitchBlackTheme.primaryHover,
+                color: pitchBlackTheme.primary,
                 transform: 'translateY(-3px)',
-                boxShadow: '0 12px 24px rgba(59, 130, 246, 0.3)',
+                boxShadow: `0 12px 24px ${pitchBlackTheme.selectedBg}`,
+                '& .MuiSvgIcon-root': {
+                  color: pitchBlackTheme.primary,
+                },
               },
             }}
           >
-            Book Your Stay
+            Book Your Experience
           </Button>
         </Box>
       </Container>

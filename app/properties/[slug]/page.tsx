@@ -5,25 +5,21 @@ import { LocationOn, Phone, Email, ArrowForward, Bed, People } from '@mui/icons-
 import Link from 'next/link';
 import { getPropertyWithRooms } from '@/lib/room-details';
 
-
-// Enhanced dark theme
-const darkTheme = {
-  background: '#0a0e13',
-  surface: '#1a1f29',
-  surfaceHover: '#252a35',
-  primary: '#3b82f6',
-  primaryHover: '#2563eb',
-  text: '#e2e8f0',
-  textSecondary: '#94a3b8',
-  border: '#1e293b',
-  selected: '#1e40af',
-  selectedBg: 'rgba(59, 130, 246, 0.1)',
-  success: '#10b981',
-  successBg: 'rgba(16, 185, 129, 0.1)',
-  error: '#ef4444',
-  errorBg: 'rgba(239, 68, 68, 0.1)',
-  warning: '#f59e0b',
-  warningBg: 'rgba(245, 158, 11, 0.1)',
+// Pitch black theme with white hover effects
+const pitchBlackTheme = {
+  background: '#000000',
+  surface: '#000000',
+  surfaceHover: '#111111',
+  primary: '#000000',
+  primaryHover: '#ffffff',
+  text: '#ffffff',
+  textSecondary: '#6b7280',
+  border: '#1a1a1a',
+  selected: '#ffffff',
+  selectedBg: 'rgba(255, 255, 255, 0.08)',
+  shadow: 'rgba(255, 255, 255, 0.1)',
+  shadowMedium: 'rgba(255, 255, 255, 0.15)',
+  accent: '#3b82f6',
 };
 
 interface PropertyPageProps {
@@ -55,7 +51,7 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                      'https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=1920';
 
   return (
-    <Box sx={{ backgroundColor: darkTheme.background, color: darkTheme.text, minHeight: '100vh' }}>
+    <Box sx={{ backgroundColor: pitchBlackTheme.background, color: pitchBlackTheme.text, minHeight: '100vh' }}>
       {/* Hero Section */}
       <Box
         sx={{
@@ -73,7 +69,7 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
           },
         }}
       >
@@ -82,23 +78,33 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
             <Chip
               label={getPropertyTypeDisplay(property.propertyType)}
               sx={{
-                backgroundColor: darkTheme.primary,
-                color: 'white',
+                backgroundColor: pitchBlackTheme.surface,
+                color: pitchBlackTheme.text,
                 fontWeight: 600,
-                textTransform: 'capitalize',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
                 mb: 3,
+                border: `1px solid ${pitchBlackTheme.border}`,
+                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  backgroundColor: pitchBlackTheme.primaryHover,
+                  borderColor: pitchBlackTheme.primaryHover,
+                  color: pitchBlackTheme.primary,
+                },
               }}
             />
             <Typography
               sx={{
-                fontWeight: 900,
+                fontWeight: 700,
                 fontSize: { xs: '3rem', md: '4rem', lg: '5rem' },
                 color: 'white',
                 mb: 3,
                 textTransform: 'uppercase',
-                letterSpacing: '-0.02em',
+                letterSpacing: '0.02em',
                 lineHeight: 0.9,
-                textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
               }}
             >
               {property.displayName}
@@ -110,7 +116,10 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                   color: 'white',
                   fontSize: '1.25rem',
                   fontWeight: 600,
-                  textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                 }}
               >
                 {property.city}, {property.country}
@@ -123,27 +132,36 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                 lineHeight: 1.6,
                 mb: 6,
                 maxWidth: '600px',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
               }}
             >
               {property.shortDescription || property.description}
             </Typography>
             <Button
-              endIcon={<ArrowForward />}
+              endIcon={<ArrowForward sx={{ fontSize: 16, transition: 'color 0.3s ease' }} />}
               sx={{
-                backgroundColor: darkTheme.primary,
-                color: 'white',
+                backgroundColor: pitchBlackTheme.primary,
+                color: pitchBlackTheme.text,
+                border: `2px solid ${pitchBlackTheme.text}`,
                 px: 6,
                 py: 3,
-                fontSize: '1.1rem',
-                fontWeight: 700,
+                fontSize: '0.8rem',
+                fontWeight: 900,
                 textTransform: 'uppercase',
-                letterSpacing: '1px',
-                borderRadius: '8px',
+                letterSpacing: '0.15em',
+                borderRadius: 0,
+                fontFamily: '"Arial Black", "Helvetica", sans-serif',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap',
                 '&:hover': {
-                  backgroundColor: darkTheme.primaryHover,
+                  backgroundColor: pitchBlackTheme.primaryHover,
+                  borderColor: pitchBlackTheme.primaryHover,
+                  color: pitchBlackTheme.primary,
                   transform: 'translateY(-3px)',
-                  boxShadow: '0 12px 24px rgba(59, 130, 246, 0.3)',
+                  boxShadow: `0 12px 24px ${pitchBlackTheme.selectedBg}`,
+                  '& .MuiSvgIcon-root': {
+                    color: pitchBlackTheme.primary,
+                  },
                 },
               }}
             >
@@ -160,12 +178,13 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
           <Box sx={{ mb: { xs: 8, md: 12 } }}>
             <Typography
               sx={{
-                fontWeight: 900,
+                fontWeight: 700,
                 fontSize: { xs: '2rem', md: '3rem' },
-                color: darkTheme.text,
+                color: pitchBlackTheme.text,
                 mb: 6,
                 textTransform: 'uppercase',
-                letterSpacing: '-0.02em',
+                letterSpacing: '0.02em',
+                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
               }}
             >
               Property Gallery
@@ -187,15 +206,18 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                   sx={{
                     position: 'relative',
                     height: 250,
-                    borderRadius: '8px',
+                    borderRadius: 0,
                     overflow: 'hidden',
                     backgroundImage: `url(${imageRelation.image.originalUrl})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     cursor: 'pointer',
-                    transition: 'transform 0.3s ease',
+                    transition: 'all 0.3s ease',
+                    border: `1px solid ${pitchBlackTheme.border}`,
                     '&:hover': {
                       transform: 'scale(1.05)',
+                      borderColor: pitchBlackTheme.text,
+                      boxShadow: `0 8px 24px ${pitchBlackTheme.selectedBg}`,
                     },
                   }}
                 >
@@ -206,7 +228,7 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                        background: 'linear-gradient(transparent, rgba(0,0,0,0.9))',
                         p: 2,
                       }}
                     >
@@ -215,6 +237,9 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                           color: 'white',
                           fontWeight: 600,
                           fontSize: '1rem',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                         }}
                       >
                         {imageRelation.image.title}
@@ -232,12 +257,13 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
           <Box sx={{ mb: { xs: 8, md: 12 } }}>
             <Typography
               sx={{
-                fontWeight: 900,
+                fontWeight: 700,
                 fontSize: { xs: '2rem', md: '3rem' },
-                color: darkTheme.text,
+                color: pitchBlackTheme.text,
                 mb: 6,
                 textTransform: 'uppercase',
-                letterSpacing: '-0.02em',
+                letterSpacing: '0.02em',
+                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
               }}
             >
               Our Rooms & Suites
@@ -257,15 +283,15 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                 <Card
                   key={roomType.id}
                   sx={{
-                    backgroundColor: darkTheme.surface,
-                    border: `1px solid ${darkTheme.border}`,
-                    borderRadius: '8px',
+                    backgroundColor: pitchBlackTheme.surface,
+                    border: `1px solid ${pitchBlackTheme.border}`,
+                    borderRadius: 0,
                     height: '100%',
                     transition: 'all 0.3s ease',
                     '&:hover': {
                       transform: 'translateY(-8px)',
-                      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-                      borderColor: darkTheme.primary,
+                      boxShadow: `0 20px 40px ${pitchBlackTheme.selectedBg}`,
+                      borderColor: pitchBlackTheme.text,
                     },
                   }}
                 >
@@ -284,11 +310,11 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                           position: 'absolute',
                           top: 12,
                           right: 12,
-                          backgroundColor: darkTheme.primary,
+                          backgroundColor: pitchBlackTheme.accent,
                           color: 'white',
                           px: 2,
                           py: 1,
-                          borderRadius: '4px',
+                          borderRadius: 0,
                           fontSize: '0.875rem',
                           fontWeight: 600,
                         }}
@@ -302,10 +328,11 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                       sx={{
                         fontWeight: 700,
                         fontSize: '1.25rem',
-                        color: darkTheme.text,
+                        color: pitchBlackTheme.text,
                         mb: 2,
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px',
+                        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                       }}
                     >
                       {roomType.displayName}
@@ -314,14 +341,14 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                     {/* Room Stats */}
                     <Box sx={{ display: 'flex', gap: 3, mb: 3, flexWrap: 'wrap' }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <People sx={{ fontSize: 16, color: darkTheme.textSecondary }} />
-                        <Typography sx={{ fontSize: '0.875rem', color: darkTheme.textSecondary }}>
+                        <People sx={{ fontSize: 16, color: pitchBlackTheme.textSecondary }} />
+                        <Typography sx={{ fontSize: '0.875rem', color: pitchBlackTheme.textSecondary }}>
                           {roomType.maxOccupancy} guests
                         </Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Bed sx={{ fontSize: 16, color: darkTheme.textSecondary }} />
-                        <Typography sx={{ fontSize: '0.875rem', color: darkTheme.textSecondary }}>
+                        <Bed sx={{ fontSize: 16, color: pitchBlackTheme.textSecondary }} />
+                        <Typography sx={{ fontSize: '0.875rem', color: pitchBlackTheme.textSecondary }}>
                           {roomType._count.rooms} available
                         </Typography>
                       </Box>
@@ -329,7 +356,7 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
 
                     <Typography
                       sx={{
-                        color: darkTheme.textSecondary,
+                        color: pitchBlackTheme.textSecondary,
                         mb: 3,
                         lineHeight: 1.6,
                         fontSize: '0.95rem',
@@ -342,15 +369,20 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                       component={Link}
                       href={`/properties/${property.slug}/rooms/${roomType.id}`}
                       sx={{
-                        backgroundColor: darkTheme.primary,
-                        color: 'white',
+                        backgroundColor: pitchBlackTheme.primary,
+                        color: pitchBlackTheme.text,
+                        border: `2px solid ${pitchBlackTheme.text}`,
                         py: 1.5,
-                        fontWeight: 600,
+                        fontWeight: 900,
                         textTransform: 'uppercase',
-                        letterSpacing: '1px',
-                        borderRadius: '8px',
+                        letterSpacing: '0.15em',
+                        borderRadius: 0,
+                        fontFamily: '"Arial Black", "Helvetica", sans-serif',
+                        transition: 'all 0.2s ease',
                         '&:hover': {
-                          backgroundColor: darkTheme.primaryHover,
+                          backgroundColor: pitchBlackTheme.primaryHover,
+                          borderColor: pitchBlackTheme.primaryHover,
+                          color: pitchBlackTheme.primary,
                           transform: 'translateY(-2px)',
                         },
                       }}
@@ -368,12 +400,13 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
         <Box sx={{ mb: { xs: 8, md: 12 } }}>
           <Typography
             sx={{
-              fontWeight: 900,
+              fontWeight: 700,
               fontSize: { xs: '2rem', md: '3rem' },
-              color: darkTheme.text,
+              color: pitchBlackTheme.text,
               mb: 6,
               textTransform: 'uppercase',
-              letterSpacing: '-0.02em',
+              letterSpacing: '0.02em',
+              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
             Contact Information
@@ -390,52 +423,97 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
           >
             <Card
               sx={{
-                backgroundColor: darkTheme.surface,
-                border: `1px solid ${darkTheme.border}`,
-                borderRadius: '8px',
+                backgroundColor: pitchBlackTheme.surface,
+                border: `1px solid ${pitchBlackTheme.border}`,
+                borderRadius: 0,
                 p: 3,
                 textAlign: 'center',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: pitchBlackTheme.text,
+                  transform: 'translateY(-4px)',
+                  boxShadow: `0 8px 24px ${pitchBlackTheme.selectedBg}`,
+                },
               }}
             >
-              <Phone sx={{ fontSize: 40, color: darkTheme.primary, mb: 2 }} />
-              <Typography sx={{ fontWeight: 600, color: darkTheme.text, mb: 1 }}>
+              <Phone sx={{ fontSize: 40, color: pitchBlackTheme.accent, mb: 2 }} />
+              <Typography 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: pitchBlackTheme.text, 
+                  mb: 1,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+                }}
+              >
                 Phone
               </Typography>
-              <Typography sx={{ color: darkTheme.textSecondary }}>
+              <Typography sx={{ color: pitchBlackTheme.textSecondary }}>
                 {property.phone || '+1 (555) 123-4567'}
               </Typography>
             </Card>
             <Card
               sx={{
-                backgroundColor: darkTheme.surface,
-                border: `1px solid ${darkTheme.border}`,
-                borderRadius: '8px',
+                backgroundColor: pitchBlackTheme.surface,
+                border: `1px solid ${pitchBlackTheme.border}`,
+                borderRadius: 0,
                 p: 3,
                 textAlign: 'center',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: pitchBlackTheme.text,
+                  transform: 'translateY(-4px)',
+                  boxShadow: `0 8px 24px ${pitchBlackTheme.selectedBg}`,
+                },
               }}
             >
-              <Email sx={{ fontSize: 40, color: darkTheme.primary, mb: 2 }} />
-              <Typography sx={{ fontWeight: 600, color: darkTheme.text, mb: 1 }}>
+              <Email sx={{ fontSize: 40, color: pitchBlackTheme.accent, mb: 2 }} />
+              <Typography 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: pitchBlackTheme.text, 
+                  mb: 1,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+                }}
+              >
                 Email
               </Typography>
-              <Typography sx={{ color: darkTheme.textSecondary }}>
+              <Typography sx={{ color: pitchBlackTheme.textSecondary }}>
                 {property.email || `info@${slug}.com`}
               </Typography>
             </Card>
             <Card
               sx={{
-                backgroundColor: darkTheme.surface,
-                border: `1px solid ${darkTheme.border}`,
-                borderRadius: '8px',
+                backgroundColor: pitchBlackTheme.surface,
+                border: `1px solid ${pitchBlackTheme.border}`,
+                borderRadius: 0,
                 p: 3,
                 textAlign: 'center',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: pitchBlackTheme.text,
+                  transform: 'translateY(-4px)',
+                  boxShadow: `0 8px 24px ${pitchBlackTheme.selectedBg}`,
+                },
               }}
             >
-              <LocationOn sx={{ fontSize: 40, color: darkTheme.primary, mb: 2 }} />
-              <Typography sx={{ fontWeight: 600, color: darkTheme.text, mb: 1 }}>
+              <LocationOn sx={{ fontSize: 40, color: pitchBlackTheme.accent, mb: 2 }} />
+              <Typography 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: pitchBlackTheme.text, 
+                  mb: 1,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+                }}
+              >
                 Address
               </Typography>
-              <Typography sx={{ color: darkTheme.textSecondary }}>
+              <Typography sx={{ color: pitchBlackTheme.textSecondary }}>
                 {property.address || `${property.city}${property.state ? ', ' + property.state : ''}, ${property.country}`}
               </Typography>
             </Card>
@@ -446,27 +524,33 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
         <Box
           sx={{
             textAlign: 'center',
-            backgroundColor: darkTheme.surface,
+            backgroundColor: pitchBlackTheme.surface,
             p: { xs: 6, md: 8 },
-            borderRadius: '8px',
-            border: `1px solid ${darkTheme.border}`,
+            borderRadius: 0,
+            border: `1px solid ${pitchBlackTheme.border}`,
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              borderColor: pitchBlackTheme.text,
+              boxShadow: `0 8px 24px ${pitchBlackTheme.selectedBg}`,
+            },
           }}
         >
           <Typography
             sx={{
-              fontWeight: 900,
+              fontWeight: 700,
               fontSize: { xs: '2rem', md: '3rem' },
-              color: darkTheme.text,
+              color: pitchBlackTheme.text,
               mb: 4,
               textTransform: 'uppercase',
-              letterSpacing: '-0.02em',
+              letterSpacing: '0.02em',
+              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
             Ready to Experience Luxury?
           </Typography>
           <Typography
             sx={{
-              color: darkTheme.textSecondary,
+              color: pitchBlackTheme.textSecondary,
               fontSize: '1.2rem',
               lineHeight: 1.6,
               mb: 6,
@@ -477,21 +561,30 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
             Book your stay at {property.displayName} and discover why we&apos;re the preferred choice for discerning travelers.
           </Typography>
           <Button
-            endIcon={<ArrowForward />}
+            endIcon={<ArrowForward sx={{ fontSize: 16, transition: 'color 0.3s ease' }} />}
             sx={{
-              backgroundColor: darkTheme.primary,
-              color: 'white',
+              backgroundColor: pitchBlackTheme.primary,
+              color: pitchBlackTheme.text,
+              border: `2px solid ${pitchBlackTheme.text}`,
               px: 8,
               py: 3,
-              fontSize: '1.1rem',
-              fontWeight: 700,
+              fontSize: '0.8rem',
+              fontWeight: 900,
               textTransform: 'uppercase',
-              letterSpacing: '1px',
-              borderRadius: '8px',
+              letterSpacing: '0.15em',
+              borderRadius: 0,
+              fontFamily: '"Arial Black", "Helvetica", sans-serif',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
               '&:hover': {
-                backgroundColor: darkTheme.primaryHover,
+                backgroundColor: pitchBlackTheme.primaryHover,
+                borderColor: pitchBlackTheme.primaryHover,
+                color: pitchBlackTheme.primary,
                 transform: 'translateY(-3px)',
-                boxShadow: '0 12px 24px rgba(59, 130, 246, 0.3)',
+                boxShadow: `0 12px 24px ${pitchBlackTheme.selectedBg}`,
+                '& .MuiSvgIcon-root': {
+                  color: pitchBlackTheme.primary,
+                },
               },
             }}
           >

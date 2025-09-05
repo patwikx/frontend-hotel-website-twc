@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -10,31 +10,27 @@ import {
   CardContent,
   Button,
   Stack,
-  Chip,
 } from '@mui/material';
 import { CalendarToday, ArrowForward } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { SpecialOfferData } from '../lib/actions/special-offers';
 
-
-// Enhanced dark theme matching BusinessUnitSwitcher aesthetic
-const darkTheme = {
-  background: '#0a0e13',
-  surface: '#1a1f29',
-  surfaceHover: '#252a35',
-  primary: '#3b82f6',
-  primaryHover: '#2563eb',
-  text: '#e2e8f0',
-  textSecondary: '#94a3b8',
-  border: '#1e293b',
-  selected: '#1e40af',
-  selectedBg: 'rgba(59, 130, 246, 0.1)',
-  success: '#10b981',
-  successBg: 'rgba(16, 185, 129, 0.1)',
+// Pitch black theme with white hover effects
+const pitchBlackTheme = {
+  background: '#000000',
+  surface: '#000000',
+  surfaceHover: '#111111',
+  primary: '#000000',
+  primaryHover: '#ffffff',
+  text: '#ffffff',
+  textSecondary: '#6b7280',
+  border: '#1a1a1a',
+  selected: '#ffffff',
+  selectedBg: 'rgba(255, 255, 255, 0.08)',
+  shadow: 'rgba(255, 255, 255, 0.1)',
+  shadowMedium: 'rgba(255, 255, 255, 0.15)',
   error: '#ef4444',
   errorBg: 'rgba(239, 68, 68, 0.1)',
-  warning: '#f59e0b',
-  warningBg: 'rgba(245, 158, 11, 0.1)',
   errorHover: '#b91c1c',
 };
 
@@ -42,26 +38,46 @@ interface SpecialOffersProps {
   offers: SpecialOfferData[];
 }
 
-// Create motion variants for the animations
+// Create motion variants for the animations - mobile-friendly
 const cardVariants = {
   hiddenLeft: {
     opacity: 0,
-    x: -1200, // Start from far left (fixed value)
-    scale: 0.9
+    x: -100,
+    scale: 0.95
   },
   hiddenRight: {
     opacity: 0,
-    x: 1200, // Start from far right (fixed value)
-    scale: 0.9
+    x: 100,
+    scale: 0.95
+  },
+  hiddenMobile: {
+    opacity: 0,
+    y: 50, // Slide up from bottom on mobile
+    scale: 0.95
   },
   visible: {
     opacity: 1,
     x: 0,
+    y: 0,
     scale: 1,
   }
 };
 
 const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const formatDate = (date: Date): string => {
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
@@ -82,18 +98,15 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
   };
 
   const getPrimaryImage = (offer: SpecialOfferData): string => {
-    // Find primary image first
     const primaryImage = offer.images.find(img => img.isPrimary);
     if (primaryImage) {
       return primaryImage.image.originalUrl;
     }
     
-    // Fallback to first image if no primary
     if (offer.images.length > 0) {
       return offer.images[0].image.originalUrl;
     }
     
-    // Default fallback image
     return '/images/placeholder-offer.jpg';
   };
 
@@ -129,33 +142,27 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
 
   if (!offers || offers.length === 0) {
     return (
-      <Box 
-        sx={{ 
-          py: { xs: 8, md: 16 },
-          backgroundColor: darkTheme.background,
-          textAlign: 'center',
-          color: darkTheme.text,
-        }}
-      >
+      <Box sx={{ 
+        py: { xs: 8, md: 16 }, 
+        textAlign: 'center', 
+        backgroundColor: pitchBlackTheme.background, 
+        color: pitchBlackTheme.text,
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+      }}>
         <Container maxWidth="xl">
-          <Typography
+          <Typography 
             sx={{
-              fontWeight: 900,
-              fontSize: { xs: '2rem', md: '3rem' },
-              color: darkTheme.text,
-              mb: 4,
+              fontWeight: 700,
+              fontSize: { xs: '1.25rem', md: '1.5rem' },
+              color: pitchBlackTheme.textSecondary,
               textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
             No special offers available at the moment.
-          </Typography>
-          <Typography
-            sx={{
-              color: darkTheme.textSecondary,
-              mt: 2,
-            }}
-          >
-            Check back soon for exciting deals and packages!
           </Typography>
         </Container>
       </Box>
@@ -165,51 +172,52 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
   return (
     <Box 
       sx={{ 
-        py: { xs: 8, md: 16 },
-        backgroundColor: darkTheme.background,
+        backgroundColor: pitchBlackTheme.background,
         position: 'relative',
+        color: pitchBlackTheme.text,
+        minHeight: '100vh',
+        width: '100%',
+        overflow: 'hidden', // Prevent horizontal scroll on mobile
       }}
     >
-      <Container maxWidth="xl">
-        {/* Header Section */}
-        <Box sx={{ textAlign: 'center', mb: { xs: 8, md: 12 } }}>
+      {/* Header Section */}
+      <Container maxWidth="xl" sx={{ pt: { xs: 8, md: 16 }, pb: { xs: 6, md: 12 } }}>
+        <Box sx={{ textAlign: 'center' }}>
           <Typography
-            variant="overline"
             sx={{
-              color: darkTheme.textSecondary,
-              fontWeight: 700,
-              letterSpacing: 3,
+              color: pitchBlackTheme.textSecondary,
               fontSize: '0.875rem',
+              fontWeight: 500,
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
               mb: 2,
-              display: 'block',
-              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
             }}
           >
-            Limited Time Only
+            Premium Hospitality
           </Typography>
           <Typography
             sx={{
-              fontWeight: 900,
-              fontSize: { xs: '2.75rem', md: '4rem', lg: '5rem' },
-              lineHeight: { xs: 0.9, md: 0.85 },
-              color: darkTheme.text,
-              mb: 4,
-              letterSpacing: '-0.02em',
+              fontWeight: 700,
+              fontSize: { xs: '2.5rem', md: '4rem', lg: '5rem' },
+              color: pitchBlackTheme.text,
               textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+              lineHeight: { xs: 1.1, md: 1.1 },
               fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+              mb: 4,
             }}
           >
-            SPECIAL OFFERS
+            Special Offers
           </Typography>
           <Typography
             sx={{
-              color: darkTheme.textSecondary,
-              fontSize: { xs: '1.125rem', md: '1.25rem' },
+              color: pitchBlackTheme.textSecondary,
+              fontSize: { xs: '1rem', md: '1.125rem' },
               lineHeight: 1.6,
               maxWidth: '600px',
               mx: 'auto',
               fontWeight: 400,
-              mt: 3,
             }}
           >
             Take advantage of our exclusive deals and packages for an unforgettable luxury experience
@@ -218,15 +226,8 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
         </Box>
       </Container>
 
-      {/* Offers List - Full Width */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 0,
-          width: '100%',
-        }}
-      >
+      {/* Offers List */}
+      <Box sx={{ width: '100%' }}>
         {offers.map((offer, index) => {
           const isEven = index % 2 === 0;
           const terms = generateTerms(offer);
@@ -234,32 +235,32 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
           return (
             <motion.div
               key={offer.id}
-              initial={isEven ? "hiddenLeft" : "hiddenRight"}
+              initial={isMobile ? "hiddenMobile" : (isEven ? "hiddenLeft" : "hiddenRight")} // Slide up on mobile, left/right on desktop
               whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{ once: true, margin: "-50px", amount: 0.2 }}
               variants={cardVariants}
               transition={{
-                duration: 0.8,
-                ease: [0.25, 0.1, 0.25, 1],
+                duration: isMobile ? 0.5 : 0.7, // Slightly faster on mobile
+                ease: isMobile ? [0.4, 0, 0.2, 1] : [0.25, 0.1, 0.25, 1], // Different easing for mobile
                 type: "tween"
+              }}
+              style={{ 
+                width: '100%',
               }}
             >
               <Card
                 sx={{
-                  backgroundColor: darkTheme.surface,
+                  backgroundColor: pitchBlackTheme.surface,
                   borderRadius: 0,
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                  boxShadow: 'none',
                   overflow: 'hidden',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: 'all 0.3s ease',
                   border: 'none',
-                  width: '100vw',
-                  position: 'relative',
-                  left: '50%',
-                  right: '50%',
-                  marginLeft: '-50vw',
-                  marginRight: '-50vw',
+                  width: '100%',
+                  mb: 0,
+                  // Ensure card is visible and animated properly
+                  opacity: 1,
                   '&:hover': {
-                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
                     '& .offer-image': {
                       transform: 'scale(1.05)',
                     },
@@ -273,8 +274,8 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                       xs: 'column', 
                       md: isEven ? 'row' : 'row-reverse' 
                     },
-                    minHeight: { xs: 'auto', md: '500px' },
-                    maxWidth: '100%',
+                    minHeight: { xs: 'auto', md: '600px' },
+                    width: '100%',
                   }}
                 >
                   {/* Image Section */}
@@ -283,8 +284,9 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                       flex: { xs: '1', md: '0 0 50%' },
                       position: 'relative',
                       overflow: 'hidden',
-                      height: { xs: '350px', md: 'auto' },
-                      minHeight: { md: '100%' },
+                      height: { xs: '400px', md: 'auto' },
+                      minHeight: { xs: '400px', md: '100%' },
+                      width: '100%',
                     }}
                   >
                     <CardMedia
@@ -299,18 +301,6 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                         transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
                       }}
                     />
-
-                    {/* Image Overlay for Better Text Visibility */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        background: 'linear-gradient(45deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.05) 100%)',
-                      }}
-                    />
                     
                     {/* Discount Badge */}
                     <Box
@@ -318,7 +308,7 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                         position: 'absolute',
                         top: 24,
                         [isEven ? 'right' : 'left']: 24,
-                        backgroundColor: darkTheme.error,
+                        backgroundColor: pitchBlackTheme.error,
                         color: 'white',
                         px: 4,
                         py: 2,
@@ -326,8 +316,12 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                         fontWeight: 900,
                         letterSpacing: '1px',
                         textTransform: 'uppercase',
-                        boxShadow: `0 4px 12px ${darkTheme.errorBg}`,
-                        zIndex: 2,
+                        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          backgroundColor: pitchBlackTheme.errorHover,
+                          transform: 'scale(1.05)',
+                        },
                       }}
                     >
                       {calculateDiscount(offer)}
@@ -340,18 +334,18 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                       flex: { xs: '1', md: '0 0 50%' },
                       display: 'flex',
                       flexDirection: 'column',
-                      maxWidth: '100%',
+                      width: '100%',
                     }}
                   >
                     <CardContent 
                       sx={{ 
-                        p: { xs: 4, md: 8 },
+                        p: { xs: 4, md: 6, lg: 8 },
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
                         textAlign: { xs: 'center', md: isEven ? 'left' : 'right' },
-                        maxWidth: '100%',
+                        width: '100%',
                       }}
                     >
                       {/* Offer Number */}
@@ -359,11 +353,12 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                         sx={{
                           fontSize: '0.75rem',
                           fontWeight: 700,
-                          color: darkTheme.textSecondary,
+                          color: pitchBlackTheme.textSecondary,
                           letterSpacing: '2px',
                           mb: 2,
                           display: 'block',
                           textTransform: 'uppercase',
+                          fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                         }}
                       >
                         Offer {String(index + 1).padStart(2, '0')}
@@ -372,15 +367,16 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                       {/* Offer Title */}
                       <Typography
                         sx={{
-                          fontWeight: 900,
+                          fontWeight: 700,
                           fontSize: { xs: '2rem', md: '2.5rem', lg: '3rem' },
-                          color: darkTheme.text,
+                          color: pitchBlackTheme.text,
                           mb: 3,
-                          letterSpacing: '-0.02em',
-                          lineHeight: 0.9,
+                          letterSpacing: '0.02em',
+                          lineHeight: 1.1,
                           textTransform: 'uppercase',
                           fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                           wordBreak: 'break-word',
+                          hyphens: 'auto',
                         }}
                       >
                         {offer.title}
@@ -395,19 +391,21 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                           xs: 'center', 
                           md: isEven ? 'flex-start' : 'flex-end' 
                         },
+                        flexWrap: 'wrap',
+                        gap: 1,
                       }}>
                         <CalendarToday sx={{ 
-                          color: darkTheme.textSecondary,
-                          mr: 1,
+                          color: pitchBlackTheme.textSecondary,
                           fontSize: 20,
                         }} />
                         <Typography 
                           sx={{ 
-                            color: darkTheme.textSecondary,
+                            color: pitchBlackTheme.textSecondary,
                             fontWeight: 600,
                             fontSize: '1rem',
                             textTransform: 'uppercase',
                             letterSpacing: '1px',
+                            fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                           }}
                         >
                           Valid until {formatDate(offer.validTo)}
@@ -417,12 +415,12 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                       {/* Description */}
                       <Typography
                         sx={{
-                          color: darkTheme.textSecondary,
-                          fontSize: { xs: '1.1rem', md: '1.2rem' },
+                          color: pitchBlackTheme.textSecondary,
+                          fontSize: { xs: '1rem', md: '1.125rem' },
                           lineHeight: 1.6,
                           mb: 5,
                           fontWeight: 400,
-                          maxWidth: '500px',
+                          maxWidth: { xs: '100%', md: '500px' },
                           mx: { xs: 'auto', md: isEven ? '0' : 'auto' },
                           ml: { md: isEven ? '0' : 'auto' },
                         }}
@@ -442,13 +440,15 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                                 xs: 'center', 
                                 md: isEven ? 'flex-start' : 'flex-end' 
                               },
+                              flexWrap: 'wrap',
                             }}
                           >
                             <Typography
                               sx={{
                                 fontSize: '1.5rem',
                                 fontWeight: 900,
-                                color: darkTheme.error,
+                                color: pitchBlackTheme.error,
+                                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                               }}
                             >
                               {offer.currency} {Number(offer.offerPrice).toLocaleString()}
@@ -457,7 +457,7 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                               sx={{
                                 fontSize: '1.2rem',
                                 fontWeight: 600,
-                                color: darkTheme.textSecondary,
+                                color: pitchBlackTheme.textSecondary,
                                 textDecoration: 'line-through',
                               }}
                             >
@@ -473,10 +473,11 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                           sx={{ 
                             fontSize: '0.75rem',
                             fontWeight: 700,
-                            color: darkTheme.text,
+                            color: pitchBlackTheme.text,
                             mb: 2,
                             textTransform: 'uppercase',
                             letterSpacing: '2px',
+                            fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                           }}
                         >
                           Terms & Conditions
@@ -495,14 +496,14 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                               key={termIndex}
                               sx={{
                                 fontSize: '0.95rem',
-                                color: darkTheme.textSecondary,
+                                color: pitchBlackTheme.textSecondary,
                                 fontWeight: 500,
                                 position: 'relative',
                                 maxWidth: '400px',
                                 textAlign: { xs: 'center', md: isEven ? 'left' : 'right' },
                                 '&::before': {
                                   content: '"•"',
-                                  color: darkTheme.primary,
+                                  color: pitchBlackTheme.text,
                                   fontWeight: 700,
                                   mr: 1,
                                 }
@@ -515,12 +516,12 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                             <Typography
                               sx={{
                                 fontSize: '0.95rem',
-                                color: darkTheme.textSecondary,
+                                color: pitchBlackTheme.textSecondary,
                                 fontWeight: 500,
                                 position: 'relative',
                                 '&::before': {
                                   content: '"•"',
-                                  color: darkTheme.primary,
+                                  color: pitchBlackTheme.text,
                                   fontWeight: 700,
                                   mr: 1,
                                 }
@@ -543,23 +544,31 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
                         }}
                       >
                         <Button
-                          endIcon={<ArrowForward sx={{ fontSize: 18 }} />}
+                          endIcon={<ArrowForward sx={{ fontSize: 16, transition: 'color 0.3s ease' }} />}
                           sx={{
-                            backgroundColor: darkTheme.primary,
-                            color: 'white',
-                            px: 6,
+                            backgroundColor: pitchBlackTheme.primary,
+                            color: pitchBlackTheme.text,
+                            border: `2px solid ${pitchBlackTheme.text}`,
+                            px: 5,
                             py: 2.5,
-                            fontSize: '1rem',
-                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            fontWeight: 900,
                             textTransform: 'uppercase',
-                            letterSpacing: '1px',
-                            borderRadius: '8px',
-                            minWidth: '200px',
-                            transition: 'all 0.3s ease',
+                            letterSpacing: '0.15em',
+                            borderRadius: 0,
+                            minWidth: '160px',
+                            fontFamily: '"Arial Black", "Helvetica", sans-serif',
+                            transition: 'all 0.2s ease',
+                            whiteSpace: 'nowrap',
                             '&:hover': {
-                              backgroundColor: darkTheme.primaryHover,
-                              transform: 'translateY(-3px)',
-                              boxShadow: `0 12px 24px ${darkTheme.selectedBg}`,
+                              backgroundColor: pitchBlackTheme.primaryHover,
+                              borderColor: pitchBlackTheme.primaryHover,
+                              color: pitchBlackTheme.primary,
+                              transform: 'translateY(-1px)',
+                              boxShadow: `0 4px 12px ${pitchBlackTheme.selectedBg}`,
+                              '& .MuiSvgIcon-root': {
+                                color: pitchBlackTheme.primary,
+                              },
                             },
                           }}
                           href={`/offers/${offer.slug}`}
@@ -577,24 +586,24 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
         })}
       </Box>
 
-      {/* Bottom Section */}
+      {/* Bottom CTA Section */}
       <Container maxWidth="xl">
         <Box 
           sx={{ 
             textAlign: 'center', 
-            mt: { xs: 4, md: 8 },
-            py: { xs: 6, md: 8 },
+            py: { xs: 8, md: 12 },
           }}
         >
           <Typography
             sx={{
-              fontWeight: 900,
+              fontWeight: 700,
               fontSize: { xs: '2.5rem', md: '4rem' },
-              color: darkTheme.text,
+              color: pitchBlackTheme.text,
               mb: 4,
               textTransform: 'uppercase',
-              letterSpacing: '-0.02em',
+              letterSpacing: '0.02em',
               lineHeight: 0.9,
+              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
             Limited time offers
@@ -603,24 +612,32 @@ const SpecialOffers: React.FC<SpecialOffersProps> = ({ offers }) => {
           </Typography>
           
           <Button
+            endIcon={<ArrowForward />}
             component="a"
             href="/special-offers"
             sx={{
-              backgroundColor: darkTheme.error,
-              color: 'white',
+              backgroundColor: pitchBlackTheme.primary,
+              color: pitchBlackTheme.text,
+              border: `2px solid ${pitchBlackTheme.text}`,
               px: 10,
               py: 3.5,
               fontSize: '1rem',
               fontWeight: 700,
               textTransform: 'uppercase',
               letterSpacing: '1px',
-              borderRadius: '8px',
+              borderRadius: 0,
               mt: 4,
               transition: 'all 0.3s ease',
+              whiteSpace: 'nowrap',
               '&:hover': {
-                backgroundColor: darkTheme.errorHover,
+                backgroundColor: pitchBlackTheme.primaryHover,
+                borderColor: pitchBlackTheme.primaryHover,
+                color: pitchBlackTheme.primary,
                 transform: 'translateY(-3px)',
-                boxShadow: `0 12px 24px ${darkTheme.errorBg}`,
+                boxShadow: `0 12px 24px ${pitchBlackTheme.selectedBg}`,
+                '& .MuiSvgIcon-root': {
+                  color: pitchBlackTheme.primary,
+                },
               },
             }}
           >

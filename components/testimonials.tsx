@@ -14,26 +14,22 @@ import { FormatQuote } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { TestimonialData } from '../lib/actions/testimonials';
 
-
-// Enhanced dark theme matching BusinessUnitSwitcher aesthetic
-const darkTheme = {
-  background: '#0a0e13',
-  surface: '#1a1f29',
-  surfaceHover: '#252a35',
-  primary: '#3b82f6',
-  primaryHover: '#2563eb',
-  text: '#e2e8f0',
-  textSecondary: '#94a3b8',
-  border: '#1e293b',
-  selected: '#1e40af',
-  selectedBg: 'rgba(59, 130, 246, 0.1)',
-  success: '#10b981',
-  successBg: 'rgba(16, 185, 129, 0.1)',
-  error: '#ef4444',
-  errorBg: 'rgba(239, 68, 68, 0.1)',
+// Pitch black theme with white hover effects
+const pitchBlackTheme = {
+  background: '#000000',
+  surface: '#000000',
+  surfaceHover: '#111111',
+  primary: '#000000',
+  primaryHover: '#ffffff',
+  text: '#ffffff',
+  textSecondary: '#6b7280',
+  border: '#1a1a1a',
+  selected: '#ffffff',
+  selectedBg: 'rgba(255, 255, 255, 0.08)',
+  shadow: 'rgba(255, 255, 255, 0.1)',
+  shadowMedium: 'rgba(255, 255, 255, 0.15)',
   warning: '#f59e0b',
-  warningBg: 'rgba(245, 158, 11, 0.1)',
-  errorHover: '#b91c1c',
+  accent: '#3b82f6',
 };
 
 interface TestimonialsProps {
@@ -91,20 +87,24 @@ const contentItemVariants = {
 const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
   if (!testimonials.length) {
     return (
-      <Box 
-        sx={{ 
-          py: { xs: 8, md: 16 },
-          backgroundColor: darkTheme.background,
-          textAlign: 'center',
-          color: darkTheme.text,
-        }}
-      >
+      <Box sx={{ 
+        py: { xs: 8, md: 16 }, 
+        textAlign: 'center', 
+        backgroundColor: pitchBlackTheme.background, 
+        color: pitchBlackTheme.text,
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+      }}>
         <Container maxWidth="xl">
           <Typography 
-            variant="h4" 
-            sx={{ 
-              color: darkTheme.textSecondary,
-              fontWeight: 400,
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: '1.25rem', md: '1.5rem' },
+              color: pitchBlackTheme.textSecondary,
+              textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
             No testimonials available at the moment.
@@ -117,62 +117,63 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
   return (
     <Box 
       sx={{ 
-        py: { xs: 8, md: 16 },
-        backgroundColor: darkTheme.background,
+        backgroundColor: pitchBlackTheme.background,
         position: 'relative',
-        color: darkTheme.text,
+        color: pitchBlackTheme.text,
+        minHeight: '100vh',
+        width: '100%',
       }}
     >
-      <Container maxWidth="xl">
-        {/* Header Section */}
-        <Box sx={{ textAlign: 'center', mb: { xs: 8, md: 12 } }}>
+      {/* Header Section */}
+      <Container maxWidth="xl" sx={{ pt: { xs: 8, md: 16 }, pb: { xs: 6, md: 12 } }}>
+        <Box sx={{ textAlign: 'center' }}>
           <Typography
-            variant="overline"
             sx={{
-              color: darkTheme.textSecondary,
-              fontWeight: 700,
-              letterSpacing: 3,
+              color: pitchBlackTheme.textSecondary,
               fontSize: '0.875rem',
+              fontWeight: 500,
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
               mb: 2,
-              display: 'block',
-              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
             }}
           >
-            Guest Experiences
+            Premium Hospitality
           </Typography>
           <Typography
             sx={{
-              fontWeight: 900,
-              fontSize: { xs: '2.75rem', md: '4rem', lg: '5rem' },
-              lineHeight: { xs: 0.9, md: 0.85 },
-              color: darkTheme.text,
-              mb: 4,
-              letterSpacing: '-0.02em',
+              fontWeight: 700,
+              fontSize: { xs: '2.5rem', md: '4rem', lg: '5rem' },
+              color: pitchBlackTheme.text,
               textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+              lineHeight: { xs: 1.1, md: 1.1 },
               fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+              mb: 4,
             }}
           >
-            WHAT OUR
+            What Our
             <br />
-            GUESTS SAY
+            Guests Say
           </Typography>
           <Typography
             sx={{
-              color: darkTheme.textSecondary,
-              fontSize: { xs: '1.125rem', md: '1.25rem' },
+              color: pitchBlackTheme.textSecondary,
+              fontSize: { xs: '1rem', md: '1.125rem' },
               lineHeight: 1.6,
               maxWidth: '600px',
               mx: 'auto',
               fontWeight: 400,
-              mt: 3,
             }}
           >
             Hear from our satisfied guests about their exceptional experiences
             at Tropicana Worldwide properties.
           </Typography>
         </Box>
+      </Container>
 
-        {/* Testimonials List */}
+      {/* Testimonials List */}
+      <Container maxWidth="xl">
         <Box
           sx={{
             display: 'flex',
@@ -194,18 +195,24 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                 whileInView="visible"
                 viewport={{ once: true, margin: "-100px" }}
                 variants={cardContainerVariants}
+                transition={{
+                  duration: 0.8,
+                  ease: [0.25, 0.1, 0.25, 1],
+                  type: "tween"
+                }}
               >
                 <Card
                   sx={{
-                    backgroundColor: darkTheme.surface,
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    backgroundColor: pitchBlackTheme.surface,
+                    borderRadius: 0,
+                    boxShadow: 'none',
                     overflow: 'hidden',
                     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    border: `1px solid ${darkTheme.border}`,
+                    border: `1px solid ${pitchBlackTheme.border}`,
                     '&:hover': {
                       transform: 'translateY(-8px)',
-                      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
+                      boxShadow: `0 20px 40px ${pitchBlackTheme.selectedBg}`,
+                      borderColor: pitchBlackTheme.text,
                     },
                   }}
                 >
@@ -216,7 +223,8 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                         xs: 'column', 
                         md: isEven ? 'row' : 'row-reverse' 
                       },
-                      minHeight: { xs: 'auto', md: '350px' },
+                      minHeight: { xs: 'auto', md: '400px' },
+                      width: '100%',
                     }}
                   >
                     {/* Avatar Section */}
@@ -228,9 +236,11 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          backgroundColor: darkTheme.background,
+                          backgroundColor: pitchBlackTheme.surfaceHover,
                           py: { xs: 6, md: 0 },
                           height: '100%',
+                          borderRight: isEven ? `1px solid ${pitchBlackTheme.border}` : 'none',
+                          borderLeft: !isEven ? `1px solid ${pitchBlackTheme.border}` : 'none',
                         }}
                       >
                         <Box
@@ -245,7 +255,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                               position: 'absolute',
                               top: -20,
                               [isEven ? 'right' : 'left']: -20,
-                              color: darkTheme.text,
+                              color: pitchBlackTheme.text,
                               fontSize: 48,
                               opacity: 0.1,
                               transform: isEven ? 'none' : 'scaleX(-1)',
@@ -260,12 +270,17 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                               height: { xs: 120, md: 140 },
                               mx: 'auto',
                               mb: 3,
-                              border: `4px solid ${darkTheme.surface}`,
-                              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+                              border: `4px solid ${pitchBlackTheme.border}`,
+                              boxShadow: `0 8px 24px ${pitchBlackTheme.selectedBg}`,
                               fontSize: '3rem',
                               fontWeight: 700,
-                              backgroundColor: darkTheme.primary,
+                              backgroundColor: pitchBlackTheme.accent,
                               color: 'white',
+                              transition: 'all 0.3s ease',
+                              '&:hover': {
+                                transform: 'scale(1.05)',
+                                borderColor: pitchBlackTheme.text,
+                              },
                             }}
                           >
                             {!testimonial.guestImage && 
@@ -275,11 +290,11 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
 
                           <Typography
                             sx={{
-                              fontWeight: 900,
+                              fontWeight: 700,
                               fontSize: { xs: '1.5rem', md: '1.75rem' },
-                              color: darkTheme.text,
+                              color: pitchBlackTheme.text,
                               mb: 1,
-                              letterSpacing: '-0.01em',
+                              letterSpacing: '0.02em',
                               textTransform: 'uppercase',
                               fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                             }}
@@ -290,10 +305,11 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                           {testimonial.guestTitle && (
                             <Typography
                               sx={{
-                                color: darkTheme.textSecondary,
+                                color: pitchBlackTheme.textSecondary,
                                 fontWeight: 600,
                                 fontSize: '0.875rem',
                                 mb: 1,
+                                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                               }}
                             >
                               {testimonial.guestTitle}
@@ -303,12 +319,13 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                           {testimonial.guestCountry && (
                             <Typography
                               sx={{
-                                color: darkTheme.textSecondary,
+                                color: pitchBlackTheme.textSecondary,
                                 fontWeight: 600,
                                 fontSize: '1rem',
                                 textTransform: 'uppercase',
                                 letterSpacing: '1px',
                                 mb: 1,
+                                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                               }}
                             >
                               {testimonial.guestCountry}
@@ -320,9 +337,10 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                               sx={{
                                 fontSize: '0.75rem',
                                 fontWeight: 700,
-                                color: darkTheme.textSecondary,
+                                color: pitchBlackTheme.textSecondary,
                                 textTransform: 'uppercase',
                                 letterSpacing: '2px',
+                                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                               }}
                             >
                               Stay: {new Date(testimonial.stayDate).toLocaleDateString('en-US', {
@@ -372,18 +390,22 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                                   value={displayRating} 
                                   readOnly 
                                   sx={{ 
-                                    color: darkTheme.warning,
+                                    color: pitchBlackTheme.warning,
                                     fontSize: '2rem',
                                     mb: 1,
+                                    '& .MuiRating-iconEmpty': {
+                                      color: pitchBlackTheme.border,
+                                    },
                                   }} 
                                 />
                                 <Typography
                                   sx={{
                                     fontSize: '0.75rem',
                                     fontWeight: 700,
-                                    color: darkTheme.text,
+                                    color: pitchBlackTheme.text,
                                     textTransform: 'uppercase',
                                     letterSpacing: '2px',
+                                    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                                   }}
                                 >
                                   {displayRating}/5 Stars
@@ -396,7 +418,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                           <motion.div variants={contentItemVariants}>
                             <Typography
                               sx={{
-                                color: darkTheme.textSecondary,
+                                color: pitchBlackTheme.textSecondary,
                                 fontSize: { xs: '1.25rem', md: '1.5rem' },
                                 lineHeight: 1.6,
                                 mb: 4,
@@ -408,7 +430,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                                 position: 'relative',
                                 '&::before': {
                                   content: '"\\"',
-                                  color: darkTheme.text,
+                                  color: pitchBlackTheme.text,
                                   fontSize: '3rem',
                                   fontWeight: 900,
                                   position: 'absolute',
@@ -418,7 +440,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                                 },
                                 '&::after': {
                                   content: '"\\"',
-                                  color: darkTheme.text,
+                                  color: pitchBlackTheme.text,
                                   fontSize: '3rem',
                                   fontWeight: 900,
                                   position: 'absolute',
@@ -445,9 +467,10 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                                   sx={{
                                     fontSize: '0.75rem',
                                     fontWeight: 700,
-                                    color: darkTheme.textSecondary,
+                                    color: pitchBlackTheme.textSecondary,
                                     textTransform: 'uppercase',
                                     letterSpacing: '2px',
+                                    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                                   }}
                                 >
                                   Via {testimonial.source}
@@ -459,7 +482,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
                                   sx={{
                                     fontSize: '0.75rem',
                                     fontWeight: 500,
-                                    color: darkTheme.textSecondary,
+                                    color: pitchBlackTheme.textSecondary,
                                   }}
                                 >
                                   {new Date(testimonial.reviewDate).toLocaleDateString('en-US', {
@@ -490,13 +513,14 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
         >
           <Typography
             sx={{
-              fontWeight: 900,
+              fontWeight: 700,
               fontSize: { xs: '2.5rem', md: '4rem' },
-              color: darkTheme.text,
+              color: pitchBlackTheme.text,
               mb: 4,
               textTransform: 'uppercase',
-              letterSpacing: '-0.02em',
+              letterSpacing: '0.02em',
               lineHeight: 0.9,
+              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
             Ready to create
@@ -506,7 +530,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ testimonials }) => {
           
           <Typography
             sx={{
-              color: darkTheme.textSecondary,
+              color: pitchBlackTheme.textSecondary,
               fontSize: { xs: '1.125rem', md: '1.25rem' },
               lineHeight: 1.6,
               maxWidth: '500px',

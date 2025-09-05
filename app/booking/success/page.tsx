@@ -7,18 +7,22 @@ import { CheckCircleOutline, Home } from '@mui/icons-material';
 import Link from 'next/link';
 import { getReservationByConfirmationNumber } from '@/lib/reservation-check';
 
-
-// Enhanced dark theme
-const darkTheme = {
-  background: '#0a0e13',
-  surface: '#1a1f29',
-  surfaceHover: '#252a35',
-  primary: '#3b82f6',
-  primaryHover: '#2563eb',
-  text: '#e2e8f0',
-  textSecondary: '#94a3b8',
-  border: '#1e293b',
+// Pitch black theme with white hover effects
+const pitchBlackTheme = {
+  background: '#000000',
+  surface: '#000000',
+  surfaceHover: '#111111',
+  primary: '#000000',
+  primaryHover: '#ffffff',
+  text: '#ffffff',
+  textSecondary: '#6b7280',
+  border: '#1a1a1a',
   success: '#10b981',
+  error: '#ef4444',
+  warning: '#f59e0b',
+  gold: '#FFFFFF',
+  goldHover: '#FFFFFF',
+  selectedBg: 'rgba(255, 255, 255, 0.08)',
 };
 
 interface SuccessPageProps {
@@ -56,26 +60,26 @@ const SuccessPage: React.FC<SuccessPageProps> = async ({ searchParams }) => {
   };
 
   return (
-    <Box sx={{ backgroundColor: darkTheme.background, minHeight: '100vh', py: 8 }}>
+    <Box sx={{ backgroundColor: pitchBlackTheme.background, minHeight: '100vh', py: { xs: 8, md: 16 } }}>
       <Container maxWidth="md">
         <Card
           sx={{
-            backgroundColor: darkTheme.surface,
-            border: `1px solid ${darkTheme.border}`,
+            backgroundColor: pitchBlackTheme.surface,
+            border: `1px solid ${pitchBlackTheme.border}`,
             borderRadius: '12px',
             boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
             p: { xs: 4, md: 6 },
             textAlign: 'center',
           }}
         >
-          <Box sx={{ color: darkTheme.success, mb: 4 }}>
+          <Box sx={{ color: pitchBlackTheme.success, mb: 4 }}>
             <CheckCircleOutline sx={{ fontSize: '80px' }} />
           </Box>
           <Typography
             variant="h4"
             sx={{
               fontWeight: 900,
-              color: darkTheme.text,
+              color: pitchBlackTheme.gold,
               mb: 2,
               textTransform: 'uppercase',
               letterSpacing: '1px',
@@ -86,7 +90,7 @@ const SuccessPage: React.FC<SuccessPageProps> = async ({ searchParams }) => {
           <Typography
             variant="body1"
             sx={{
-              color: darkTheme.textSecondary,
+              color: pitchBlackTheme.textSecondary,
               fontSize: '1.1rem',
               maxWidth: '500px',
               mx: 'auto',
@@ -98,53 +102,53 @@ const SuccessPage: React.FC<SuccessPageProps> = async ({ searchParams }) => {
 
           <Card
             sx={{
-              backgroundColor: darkTheme.background,
-              border: `1px solid ${darkTheme.border}`,
+              backgroundColor: pitchBlackTheme.background,
+              border: `1px solid ${pitchBlackTheme.border}`,
               borderRadius: '8px',
               p: { xs: 2, md: 4 },
               textAlign: 'left',
               mb: 4,
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 700, color: darkTheme.text, mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: pitchBlackTheme.gold, mb: 2, textTransform: 'uppercase', letterSpacing: '1px' }}>
               Booking Summary
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ color: darkTheme.textSecondary }}>Confirmation No.:</Typography>
-                <Typography sx={{ color: darkTheme.text, fontWeight: 600 }}>{confirmationNumber}</Typography>
+                <Typography sx={{ color: pitchBlackTheme.textSecondary }}>Confirmation No.:</Typography>
+                <Typography sx={{ color: pitchBlackTheme.text, fontWeight: 600 }}>{confirmationNumber}</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ color: darkTheme.textSecondary }}>Guest Name:</Typography>
-                <Typography sx={{ color: darkTheme.text }}>{guestFullName}</Typography>
+                <Typography sx={{ color: pitchBlackTheme.textSecondary }}>Guest Name:</Typography>
+                <Typography sx={{ color: pitchBlackTheme.text }}>{guestFullName}</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ color: darkTheme.textSecondary }}>Property:</Typography>
-                <Typography sx={{ color: darkTheme.text }}>{reservation.businessUnit.displayName}</Typography>
+                <Typography sx={{ color: pitchBlackTheme.textSecondary }}>Property:</Typography>
+                <Typography sx={{ color: pitchBlackTheme.text }}>{reservation.businessUnit.displayName}</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ color: darkTheme.textSecondary }}>Room Type:</Typography>
-                <Typography sx={{ color: darkTheme.text }}>{roomTypeName}</Typography>
+                <Typography sx={{ color: pitchBlackTheme.textSecondary }}>Room Type:</Typography>
+                <Typography sx={{ color: pitchBlackTheme.text }}>{roomTypeName}</Typography>
               </Box>
-              <Divider sx={{ my: 1, borderColor: darkTheme.border }} />
+              <Divider sx={{ my: 1, borderColor: pitchBlackTheme.border }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ color: darkTheme.textSecondary }}>Check-in:</Typography>
-                <Typography sx={{ color: darkTheme.text, fontWeight: 600 }}>{checkInDate}</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ color: darkTheme.textSecondary }}>Check-out:</Typography>
-                <Typography sx={{ color: darkTheme.text, fontWeight: 600 }}>{checkOutDate}</Typography>
+                <Typography sx={{ color: pitchBlackTheme.textSecondary }}>Check-in:</Typography>
+                <Typography sx={{ color: pitchBlackTheme.text, fontWeight: 600 }}>{checkInDate}</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography sx={{ color: darkTheme.textSecondary }}>Nights:</Typography>
-                <Typography sx={{ color: darkTheme.text, fontWeight: 600 }}>{nights}</Typography>
+                <Typography sx={{ color: pitchBlackTheme.textSecondary }}>Check-out:</Typography>
+                <Typography sx={{ color: pitchBlackTheme.text, fontWeight: 600 }}>{checkOutDate}</Typography>
               </Box>
-              <Divider sx={{ my: 1, borderColor: darkTheme.border }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: darkTheme.text }}>
+                <Typography sx={{ color: pitchBlackTheme.textSecondary }}>Nights:</Typography>
+                <Typography sx={{ color: pitchBlackTheme.text, fontWeight: 600 }}>{nights}</Typography>
+              </Box>
+              <Divider sx={{ my: 1, borderColor: pitchBlackTheme.border }} />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: pitchBlackTheme.gold }}>
                   Total Paid:
                 </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: darkTheme.success }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: pitchBlackTheme.success }}>
                   {formatCurrency(totalAmount, currency)}
                 </Typography>
               </Box>
@@ -157,15 +161,33 @@ const SuccessPage: React.FC<SuccessPageProps> = async ({ searchParams }) => {
             variant="contained"
             startIcon={<Home />}
             sx={{
-              backgroundColor: darkTheme.primary,
-              color: 'white',
-              px: 4,
-              py: 2,
-              fontSize: '1.1rem',
-              fontWeight: 700,
+              backgroundColor: pitchBlackTheme.primary,
+              color: pitchBlackTheme.text,
+              border: `2px solid ${pitchBlackTheme.text}`,
+              px: { xs: 4, md: 5 },
+              py: { xs: 2, md: 2.5 },
+              fontSize: { xs: '0.8rem', md: '0.9rem' },
+              fontWeight: 900,
               textTransform: 'uppercase',
+              letterSpacing: '0.15em',
+              borderRadius: 0,
+              minWidth: { xs: 'auto', md: '160px' },
+              fontFamily: '"Arial Black", "Helvetica", sans-serif',
+              transition: 'all 0.2s ease',
+              whiteSpace: 'nowrap',
               '&:hover': {
-                backgroundColor: darkTheme.primaryHover,
+                backgroundColor: pitchBlackTheme.primaryHover,
+                borderColor: pitchBlackTheme.primaryHover,
+                color: pitchBlackTheme.primary,
+                transform: 'translateY(-1px)',
+                boxShadow: `0 4px 12px ${pitchBlackTheme.selectedBg}`,
+              },
+              '& .MuiSvgIcon-root': {
+                color: pitchBlackTheme.text,
+                transition: 'color 0.3s ease',
+              },
+              '&:hover .MuiSvgIcon-root': {
+                color: pitchBlackTheme.primary,
               },
             }}
           >

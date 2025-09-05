@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -19,47 +19,63 @@ interface EventsProps {
   events: EventData[];
 }
 
-// Enhanced dark theme matching the Restaurants component
-const darkTheme = {
-  background: '#0a0e13',
-  surface: '#1a1f29',
-  surfaceHover: '#252a35',
-  primary: '#3b82f6',
-  primaryHover: '#2563eb',
-  text: '#e2e8f0',
-  textSecondary: '#94a3b8',
-  border: '#1e293b',
-  selected: '#1e40af',
-  selectedBg: 'rgba(59, 130, 246, 0.1)',
+// Pitch black theme with white hover effects
+const pitchBlackTheme = {
+  background: '#000000',
+  surface: '#000000',
+  surfaceHover: '#111111',
+  primary: '#000000',
+  primaryHover: '#ffffff',
+  text: '#ffffff',
+  textSecondary: '#6b7280',
+  border: '#1a1a1a',
+  selected: '#ffffff',
+  selectedBg: 'rgba(255, 255, 255, 0.08)',
+  shadow: 'rgba(255, 255, 255, 0.1)',
+  shadowMedium: 'rgba(255, 255, 255, 0.15)',
   success: '#10b981',
-  successBg: 'rgba(16, 185, 129, 0.1)',
-  error: '#ef4444',
-  errorBg: 'rgba(239, 68, 68, 0.1)',
-  warning: '#f59e0b',
-  warningBg: 'rgba(245, 158, 11, 0.1)',
-  errorHover: '#b91c1c',
+  successText: '#ffffff',
 };
 
-// Create motion variants for the animations
+// Create motion variants for the animations - mobile-friendly
 const cardVariants = {
   hiddenLeft: {
     opacity: 0,
-    x: -1200, // Start from far left (fixed value)
-    scale: 0.9
+    x: -100,
+    scale: 0.95
   },
   hiddenRight: {
     opacity: 0,
-    x: 1200, // Start from far right (fixed value)
-    scale: 0.9
+    x: 100,
+    scale: 0.95
+  },
+  hiddenMobile: {
+    opacity: 0,
+    y: 50, // Slide up from bottom on mobile
+    scale: 0.95
   },
   visible: {
     opacity: 1,
     x: 0,
+    y: 0,
     scale: 1
   }
 };
 
 const Events: React.FC<EventsProps> = ({ events }) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString('en-US', {
@@ -72,7 +88,6 @@ const Events: React.FC<EventsProps> = ({ events }) => {
 
   const formatTime = (timeString: string | null): string => {
     if (!timeString) return '';
-    // Assuming timeString is in format "HH:MM" or "HH:MM:SS"
     const [hours, minutes] = timeString.split(':');
     const hour = parseInt(hours);
     const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -81,14 +96,13 @@ const Events: React.FC<EventsProps> = ({ events }) => {
   };
 
   const getPrimaryImage = (images: EventData['images']) => {
-    // Find primary image first, otherwise use first image, or fallback
     const primaryImage = images.find(img => img.isPrimary);
     const fallbackImage = images[0];
     const imageToUse = primaryImage || fallbackImage;
     
     return imageToUse?.image?.mediumUrl || 
            imageToUse?.image?.originalUrl || 
-           'https://images.pexels.com/photos/1587927/pexels-photo-1587927.jpeg?auto=compress&cs=tinysrgb&w=800'; // Updated fallback
+           'https://images.pexels.com/photos/1587927/pexels-photo-1587927.jpeg?auto=compress&cs=tinysrgb&w=800';
   };
 
   const getEventTypeDisplay = (type: string): string => {
@@ -119,34 +133,27 @@ const Events: React.FC<EventsProps> = ({ events }) => {
   // Show message if no events
   if (!events || events.length === 0) {
     return (
-      <Box 
-        sx={{ 
-          py: { xs: 8, md: 16 },
-          backgroundColor: darkTheme.background,
-          textAlign: 'center',
-        }}
-      >
+      <Box sx={{ 
+        py: { xs: 8, md: 16 }, 
+        textAlign: 'center', 
+        backgroundColor: pitchBlackTheme.background, 
+        color: pitchBlackTheme.text,
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+      }}>
         <Container maxWidth="xl">
-          <Typography
+          <Typography 
             sx={{
-              fontWeight: 900,
-              fontSize: { xs: '2rem', md: '3rem' },
-              color: darkTheme.text,
-              mb: 4,
+              fontWeight: 700,
+              fontSize: { xs: '1.25rem', md: '1.5rem' },
+              color: pitchBlackTheme.textSecondary,
               textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
-            No Upcoming Events
-          </Typography>
-          <Typography
-            sx={{
-              color: darkTheme.textSecondary,
-              fontSize: '1.125rem',
-              maxWidth: '600px',
-              mx: 'auto',
-            }}
-          >
-            Check back soon for exciting upcoming events and experiences.
+            No upcoming events at this time.
           </Typography>
         </Container>
       </Box>
@@ -156,51 +163,52 @@ const Events: React.FC<EventsProps> = ({ events }) => {
   return (
     <Box 
       sx={{ 
-        py: { xs: 8, md: 16 },
-        backgroundColor: darkTheme.background,
+        backgroundColor: pitchBlackTheme.background,
         position: 'relative',
+        color: pitchBlackTheme.text,
+        minHeight: '100vh',
+        width: '100%',
+        overflow: 'hidden', // Prevent horizontal scroll on mobile
       }}
     >
-      <Container maxWidth="xl">
-        {/* Header Section */}
-        <Box sx={{ textAlign: 'center', mb: { xs: 8, md: 12 } }}>
+      {/* Header Section */}
+      <Container maxWidth="xl" sx={{ pt: { xs: 8, md: 16 }, pb: { xs: 6, md: 12 } }}>
+        <Box sx={{ textAlign: 'center' }}>
           <Typography
-            variant="overline"
             sx={{
-              color: darkTheme.textSecondary,
-              fontWeight: 700,
-              letterSpacing: 3,
+              color: pitchBlackTheme.textSecondary,
               fontSize: '0.875rem',
+              fontWeight: 500,
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
               mb: 2,
-              display: 'block',
-              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
             }}
           >
-            Exclusive Collection
+            Premium Hospitality
           </Typography>
           <Typography
             sx={{
-              fontWeight: 900,
-              fontSize: { xs: '2.75rem', md: '4rem', lg: '5rem' },
-              lineHeight: { xs: 0.9, md: 0.85 },
-              color: darkTheme.text,
-              mb: 4,
-              letterSpacing: '-0.02em',
+              fontWeight: 700,
+              fontSize: { xs: '2.5rem', md: '4rem', lg: '5rem' },
+              color: pitchBlackTheme.text,
               textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+              lineHeight: { xs: 1.1, md: 1.1 },
               fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+              mb: 4,
             }}
           >
-            UPCOMING EVENTS
+            Upcoming Events
           </Typography>
           <Typography
             sx={{
-              color: darkTheme.textSecondary,
-              fontSize: { xs: '1.125rem', md: '1.25rem' },
+              color: pitchBlackTheme.textSecondary,
+              fontSize: { xs: '1rem', md: '1.125rem' },
               lineHeight: 1.6,
               maxWidth: '600px',
               mx: 'auto',
               fontWeight: 400,
-              mt: 3,
             }}
           >
             Join us for exclusive events and experiences across our premium properties.
@@ -209,15 +217,8 @@ const Events: React.FC<EventsProps> = ({ events }) => {
         </Box>
       </Container>
 
-      {/* Events List - Full Width */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 0,
-          width: '100%',
-        }}
-      >
+      {/* Events List */}
+      <Box sx={{ width: '100%' }}>
         {events.map((event, index) => {
           const isEven = index % 2 === 0;
           const primaryImage = getPrimaryImage(event.images);
@@ -225,32 +226,32 @@ const Events: React.FC<EventsProps> = ({ events }) => {
           return (
             <motion.div
               key={event.id}
-              initial={isEven ? "hiddenLeft" : "hiddenRight"}
+              initial={isMobile ? "hiddenMobile" : (isEven ? "hiddenLeft" : "hiddenRight")} // Slide up on mobile, left/right on desktop
               whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{ once: true, margin: "-50px", amount: 0.2 }}
               variants={cardVariants}
               transition={{
-                duration: 0.8,
-                ease: [0.25, 0.1, 0.25, 1],
+                duration: isMobile ? 0.5 : 0.7, // Slightly faster on mobile
+                ease: isMobile ? [0.4, 0, 0.2, 1] : [0.25, 0.1, 0.25, 1], // Different easing for mobile
                 type: "tween"
+              }}
+              style={{ 
+                width: '100%',
               }}
             >
               <Card
                 sx={{
-                  backgroundColor: darkTheme.surface,
+                  backgroundColor: pitchBlackTheme.surface,
                   borderRadius: 0,
-                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                  boxShadow: 'none',
                   overflow: 'hidden',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transition: 'all 0.3s ease',
                   border: 'none',
-                  width: '100vw',
-                  position: 'relative',
-                  left: '50%',
-                  right: '50%',
-                  marginLeft: '-50vw',
-                  marginRight: '-50vw',
+                  width: '100%',
+                  mb: 0,
+                  // Ensure card is visible and animated properly
+                  opacity: 1,
                   '&:hover': {
-                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
                     '& .event-image': {
                       transform: 'scale(1.05)',
                     },
@@ -264,8 +265,8 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                       xs: 'column', 
                       md: isEven ? 'row' : 'row-reverse' 
                     },
-                    minHeight: { xs: 'auto', md: '500px' },
-                    maxWidth: '100%',
+                    minHeight: { xs: 'auto', md: '600px' },
+                    width: '100%',
                   }}
                 >
                   {/* Image Section */}
@@ -274,8 +275,9 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                       flex: { xs: '1', md: '0 0 50%' },
                       position: 'relative',
                       overflow: 'hidden',
-                      height: { xs: '350px', md: 'auto' },
-                      minHeight: { md: '100%' },
+                      height: { xs: '400px', md: 'auto' },
+                      minHeight: { xs: '400px', md: '100%' },
+                      width: '100%',
                     }}
                   >
                     <CardMedia
@@ -290,18 +292,6 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                         transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
                       }}
                     />
-
-                    {/* Image Overlay for Better Text Visibility */}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        background: 'linear-gradient(45deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.05) 100%)',
-                      }}
-                    />
                     
                     {/* Date Badge */}
                     <Box
@@ -309,38 +299,50 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                         position: 'absolute',
                         top: 24,
                         [isEven ? 'right' : 'left']: 24,
-                        backgroundColor: darkTheme.surface,
+                        backgroundColor: pitchBlackTheme.surface,
+                        border: `1px solid ${pitchBlackTheme.border}`,
                         px: 3,
                         py: 2,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                         minWidth: '60px',
-                        zIndex: 2,
-                        borderRadius: '8px',
-                        border: `1px solid ${darkTheme.border}`,
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          backgroundColor: pitchBlackTheme.primaryHover,
+                          borderColor: pitchBlackTheme.primaryHover,
+                          '& .date-number': {
+                            color: pitchBlackTheme.primary,
+                          },
+                          '& .date-month': {
+                            color: pitchBlackTheme.primary,
+                          },
+                        },
                       }}
                     >
                       <Typography 
+                        className="date-number"
                         sx={{ 
                           fontWeight: 900,
-                          color: darkTheme.text,
+                          color: pitchBlackTheme.text,
                           fontSize: '1.5rem',
                           lineHeight: 1,
                           mb: 0.5,
+                          transition: 'color 0.3s ease',
                         }}
                       >
                         {event.startDate.getDate()}
                       </Typography>
                       <Typography 
+                        className="date-month"
                         sx={{ 
                           fontWeight: 700,
-                          color: darkTheme.textSecondary,
+                          color: pitchBlackTheme.textSecondary,
                           fontSize: '0.75rem',
                           textTransform: 'uppercase',
                           letterSpacing: '1px',
                           lineHeight: 1,
+                          transition: 'color 0.3s ease',
                         }}
                       >
                         {event.startDate.toLocaleDateString('en-US', { month: 'short' })}
@@ -354,21 +356,38 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                           position: 'absolute',
                           bottom: 24,
                           [isEven ? 'right' : 'left']: 24,
-                          backgroundColor: event.isFree ? darkTheme.success : darkTheme.surface,
-                          color: darkTheme.text,
+                          backgroundColor: event.isFree ? pitchBlackTheme.success : pitchBlackTheme.surface,
+                          border: `1px solid ${pitchBlackTheme.border}`,
                           px: 3,
                           py: 1.5,
                           fontSize: '0.875rem',
                           fontWeight: 700,
                           textTransform: 'uppercase',
                           letterSpacing: '1px',
-                          zIndex: 2,
-                          borderRadius: '8px',
-                          border: `1px solid ${darkTheme.border}`,
-                          boxShadow: `0 2px 8px ${darkTheme.surfaceHover}`,
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            backgroundColor: pitchBlackTheme.primaryHover,
+                            borderColor: pitchBlackTheme.primaryHover,
+                            '& .price-text': {
+                              color: pitchBlackTheme.primary,
+                            },
+                          },
                         }}
                       >
-                        {formatPrice(event.ticketPrice, event.currency, event.isFree)}
+                        <Typography
+                          className="price-text"
+                          sx={{
+                            color: event.isFree ? pitchBlackTheme.successText : pitchBlackTheme.text,
+                            fontWeight: 700,
+                            fontSize: '0.875rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px',
+                            transition: 'color 0.3s ease',
+                            fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+                          }}
+                        >
+                          {formatPrice(event.ticketPrice, event.currency, event.isFree)}
+                        </Typography>
                       </Box>
                     )}
                   </Box>
@@ -379,18 +398,18 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                       flex: { xs: '1', md: '0 0 50%' },
                       display: 'flex',
                       flexDirection: 'column',
-                      maxWidth: '100%',
+                      width: '100%',
                     }}
                   >
                     <CardContent 
                       sx={{ 
-                        p: { xs: 4, md: 8 },
+                        p: { xs: 4, md: 6, lg: 8 },
                         flex: 1,
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
                         textAlign: { xs: 'center', md: isEven ? 'left' : 'right' },
-                        maxWidth: '100%',
+                        width: '100%',
                       }}
                     >
                       {/* Event Number & Business Unit */}
@@ -399,10 +418,11 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                           sx={{
                             fontSize: '0.75rem',
                             fontWeight: 700,
-                            color: darkTheme.textSecondary,
+                            color: pitchBlackTheme.textSecondary,
                             textTransform: 'uppercase',
                             letterSpacing: '2px',
                             display: 'block',
+                            fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                           }}
                         >
                           Event {String(index + 1).padStart(2, '0')}
@@ -412,10 +432,11 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                             sx={{
                               fontSize: '0.75rem',
                               fontWeight: 600,
-                              color: darkTheme.text,
+                              color: pitchBlackTheme.text,
                               textTransform: 'uppercase',
                               letterSpacing: '1px',
                               mt: 0.5,
+                              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                             }}
                           >
                             {event.businessUnit.displayName}
@@ -426,15 +447,16 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                       {/* Event Title */}
                       <Typography
                         sx={{
-                          fontWeight: 900,
+                          fontWeight: 700,
                           fontSize: { xs: '2rem', md: '2.5rem', lg: '3rem' },
-                          color: darkTheme.text,
+                          color: pitchBlackTheme.text,
                           mb: 3,
-                          letterSpacing: '-0.02em',
-                          lineHeight: 0.9,
+                          letterSpacing: '0.02em',
+                          lineHeight: 1.1,
                           textTransform: 'uppercase',
                           fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                           wordBreak: 'break-word',
+                          hyphens: 'auto',
                         }}
                       >
                         {event.title}
@@ -448,19 +470,19 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                           alignItems: { xs: 'center', md: isEven ? 'flex-start' : 'flex-end' }
                         }}
                       >
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
                           <CalendarToday sx={{ 
-                            color: darkTheme.textSecondary, 
-                            mr: 2, 
+                            color: pitchBlackTheme.textSecondary, 
                             fontSize: 20 
                           }} />
                           <Typography 
                             sx={{ 
-                              color: darkTheme.textSecondary,
+                              color: pitchBlackTheme.textSecondary,
                               fontWeight: 600,
                               fontSize: '1rem',
                               textTransform: 'uppercase',
                               letterSpacing: '1px',
+                              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                             }}
                           >
                             {formatDate(event.startDate)}
@@ -468,19 +490,19 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                           </Typography>
                         </Box>
 
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
                           <LocationOn sx={{ 
-                            color: darkTheme.textSecondary, 
-                            mr: 2, 
+                            color: pitchBlackTheme.textSecondary, 
                             fontSize: 20 
                           }} />
                           <Typography 
                             sx={{ 
-                              color: darkTheme.textSecondary,
+                              color: pitchBlackTheme.textSecondary,
                               fontWeight: 600,
                               fontSize: '1rem',
                               textTransform: 'uppercase',
                               letterSpacing: '1px',
+                              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                             }}
                           >
                             {event.venue}
@@ -491,12 +513,12 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                       {/* Description */}
                       <Typography
                         sx={{
-                          color: darkTheme.textSecondary,
-                          fontSize: { xs: '1.1rem', md: '1.2rem' },
+                          color: pitchBlackTheme.textSecondary,
+                          fontSize: { xs: '1rem', md: '1.125rem' },
                           lineHeight: 1.6,
                           mb: 5,
                           fontWeight: 400,
-                          maxWidth: '500px',
+                          maxWidth: { xs: '100%', md: '500px' },
                           mx: { xs: 'auto', md: isEven ? '0' : 'auto' },
                           ml: { md: isEven ? '0' : 'auto' },
                         }}
@@ -510,11 +532,12 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                           sx={{ 
                             fontSize: '0.75rem',
                             fontWeight: 700,
-                            color: darkTheme.textSecondary,
+                            color: pitchBlackTheme.textSecondary,
                             mb: 2,
                             textTransform: 'uppercase',
                             letterSpacing: '2px',
                             display: 'block',
+                            fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
                           }}
                         >
                           Event Details
@@ -534,12 +557,12 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                           <Typography
                             sx={{
                               fontSize: '0.95rem',
-                              color: darkTheme.textSecondary,
+                              color: pitchBlackTheme.textSecondary,
                               fontWeight: 500,
                               position: 'relative',
                               '&::before': {
                                 content: '"•"',
-                                color: darkTheme.text,
+                                color: pitchBlackTheme.text,
                                 fontWeight: 700,
                                 mr: 1,
                               }
@@ -551,12 +574,12 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                             <Typography
                               sx={{
                                 fontSize: '0.95rem',
-                                color: darkTheme.textSecondary,
+                                color: pitchBlackTheme.textSecondary,
                                 fontWeight: 500,
                                 position: 'relative',
                                 '&::before': {
                                   content: '"•"',
-                                  color: darkTheme.text,
+                                  color: pitchBlackTheme.text,
                                   fontWeight: 700,
                                   mr: 1,
                                 }
@@ -569,12 +592,12 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                             <Typography
                               sx={{
                                 fontSize: '0.95rem',
-                                color: darkTheme.textSecondary,
+                                color: pitchBlackTheme.textSecondary,
                                 fontWeight: 500,
                                 position: 'relative',
                                 '&::before': {
                                   content: '"•"',
-                                  color: darkTheme.text,
+                                  color: pitchBlackTheme.text,
                                   fontWeight: 700,
                                   mr: 1,
                                 }
@@ -597,23 +620,31 @@ const Events: React.FC<EventsProps> = ({ events }) => {
                         }}
                       >
                         <Button
-                          endIcon={<ArrowForward sx={{ fontSize: 18 }} />}
+                          endIcon={<ArrowForward sx={{ fontSize: 16, transition: 'color 0.3s ease' }} />}
                           sx={{
-                            backgroundColor: darkTheme.primary,
-                            color: 'white',
-                            px: 6,
+                            backgroundColor: pitchBlackTheme.primary,
+                            color: pitchBlackTheme.text,
+                            border: `2px solid ${pitchBlackTheme.text}`,
+                            px: 5,
                             py: 2.5,
-                            fontSize: '1rem',
-                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            fontWeight: 900,
                             textTransform: 'uppercase',
-                            letterSpacing: '1px',
-                            borderRadius: '8px',
-                            minWidth: '200px',
-                            transition: 'all 0.3s ease',
+                            letterSpacing: '0.15em',
+                            borderRadius: 0,
+                            minWidth: '160px',
+                            fontFamily: '"Arial Black", "Helvetica", sans-serif',
+                            transition: 'all 0.2s ease',
+                            whiteSpace: 'nowrap',
                             '&:hover': {
-                              backgroundColor: darkTheme.primaryHover,
-                              transform: 'translateY(-3px)',
-                              boxShadow: '0 12px 24px rgba(59, 130, 246, 0.3)',
+                              backgroundColor: pitchBlackTheme.primaryHover,
+                              borderColor: pitchBlackTheme.primaryHover,
+                              color: pitchBlackTheme.primary,
+                              transform: 'translateY(-1px)',
+                              boxShadow: `0 4px 12px ${pitchBlackTheme.selectedBg}`,
+                              '& .MuiSvgIcon-root': {
+                                color: pitchBlackTheme.primary,
+                              },
                             },
                           }}
                           href={`/events/${event.slug}`}
@@ -631,24 +662,24 @@ const Events: React.FC<EventsProps> = ({ events }) => {
         })}
       </Box>
 
-      {/* Bottom Section */}
+      {/* Bottom CTA Section */}
       <Container maxWidth="xl">
         <Box 
           sx={{ 
             textAlign: 'center', 
-            mt: { xs: 4, md: 8 },
-            py: { xs: 6, md: 8 },
+            py: { xs: 8, md: 12 },
           }}
         >
           <Typography
             sx={{
-              fontWeight: 900,
+              fontWeight: 700,
               fontSize: { xs: '2.5rem', md: '4rem' },
-              color: darkTheme.text,
+              color: pitchBlackTheme.text,
               mb: 4,
               textTransform: 'uppercase',
-              letterSpacing: '-0.02em',
+              letterSpacing: '0.02em',
               lineHeight: 0.9,
+              fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
             Don&apos;t miss out on
@@ -657,24 +688,32 @@ const Events: React.FC<EventsProps> = ({ events }) => {
           </Typography>
           
           <Button
+            endIcon={<ArrowForward />}
             component="a"
             href="/events"
             sx={{
-              backgroundColor: darkTheme.primary,
-              color: 'white',
+              backgroundColor: pitchBlackTheme.primary,
+              color: pitchBlackTheme.text,
+              border: `2px solid ${pitchBlackTheme.text}`,
               px: 10,
               py: 3.5,
               fontSize: '1rem',
               fontWeight: 700,
               textTransform: 'uppercase',
               letterSpacing: '1px',
-              borderRadius: '8px',
+              borderRadius: 0,
               mt: 4,
               transition: 'all 0.3s ease',
+              whiteSpace: 'nowrap',
               '&:hover': {
-                backgroundColor: darkTheme.primaryHover,
+                backgroundColor: pitchBlackTheme.primaryHover,
+                borderColor: pitchBlackTheme.primaryHover,
+                color: pitchBlackTheme.primary,
                 transform: 'translateY(-3px)',
-                boxShadow: '0 12px 24px rgba(59, 130, 246, 0.3)',
+                boxShadow: `0 12px 24px ${pitchBlackTheme.selectedBg}`,
+                '& .MuiSvgIcon-root': {
+                  color: pitchBlackTheme.primary,
+                },
               },
             }}
           >
