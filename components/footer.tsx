@@ -1,513 +1,492 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Container,
   Typography,
-  Link,
-  Stack,
   IconButton,
   Divider,
   TextField,
   Button,
 } from '@mui/material';
 import {
-  Hotel as HotelIcon,
   Phone,
   Email,
   LocationOn,
   Facebook,
-  Twitter,
   Instagram,
-  LinkedIn,
+  Twitter,
   YouTube,
-  ArrowForward,
+  LinkedIn,
+  Handshake,
+  CardGiftcard,
+  Spa,
+  Work,
+  Newspaper,
+  Map,
+  Accessible,
   Send,
-  Star,
-  Shield,
-  CheckCircle,
-  StarBorder,
+  Home,
+  Hotel,
+  Event,
+  LocalDining,
+  Info,
+  ContactPage,
+  RoomService,
+  Discount,
+  ConfirmationNumber,
+  HouseRounded,
 } from '@mui/icons-material';
 
-const Footer: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-  const currentYear = new Date().getFullYear();
+// Refined minimal theme
+const theme = {
+  background: '#000000',
+  surface: '#0a0a0a',
+  primary: '#ffffff',
+  text: '#ffffff',
+  textSecondary: '#999999',
+  textMuted: '#666666',
+  border: '#1a1a1a',
+  accent: '#333333',
+};
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setSubscribed(true);
-      setEmail('');
-      setTimeout(() => setSubscribed(false), 3000);
+interface FooterProps {
+  websiteConfig: {
+    siteName: string;
+    tagline?: string | null;
+    description?: string | null;
+    primaryPhone?: string | null;
+    primaryEmail?: string | null;
+    bookingEmail?: string | null;
+    supportEmail?: string | null;
+    headquarters?: string | null;
+    facebookUrl?: string | null;
+    instagramUrl?: string | null;
+    twitterUrl?: string | null;
+    youtubeUrl?: string | null;
+    linkedinUrl?: string | null;
+    privacyPolicyUrl?: string | null;
+    termsOfServiceUrl?: string | null;
+    cookiePolicyUrl?: string | null;
+  } | null;
+  businessUnits: {
+    id: string;
+    name: string;
+    displayName: string;
+    slug: string;
+    city: string;
+    country: string;
+    phone?: string | null;
+    email?: string | null;
+    icon?: React.ReactNode;
+  }[];
+  quickLinks: {
+    name: string;
+    href: string;
+    icon?: React.ReactNode;
+  }[];
+}
+
+const Footer: React.FC<FooterProps> = ({ websiteConfig, businessUnits, quickLinks }) => {
+  const currentYear = new Date().getFullYear();
+  const companyName = websiteConfig?.siteName || websiteConfig?.siteName || 'Tropicana Worldwide Corporation';
+  const siteName = websiteConfig?.siteName || 'TROPICANA WORLDWIDE CORPORATION';
+
+  // We are now directly using the props, but adding mock icons to fill the UI
+  // if the original data doesn't have them.
+  const populatedQuickLinks = quickLinks.length > 0 ? quickLinks.map(link => ({
+    ...link,
+    icon: link.icon || (() => {
+      switch (link.name) {
+        case 'Home': return <Home sx={{ fontSize: 14, mr: 1 }} />;
+        case 'Properties': return <Hotel sx={{ fontSize: 14, mr: 1 }} />;
+        case 'Reservations': return <ConfirmationNumber sx={{ fontSize: 14, mr: 1 }} />;
+        case 'Special Offers': return <Discount sx={{ fontSize: 14, mr: 1 }} />;
+        case 'Events': return <Event sx={{ fontSize: 14, mr: 1 }} />;
+        case 'Restaurants': return <LocalDining sx={{ fontSize: 14, mr: 1 }} />;
+        case 'About Us': return <Info sx={{ fontSize: 14, mr: 1 }} />;
+        case 'Contact': return <ContactPage sx={{ fontSize: 14, mr: 1 }} />;
+        default: return null;
+      }
+    })()
+  })) : [
+    { name: 'Home', href: '/', icon: <Home sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Properties', href: '/properties', icon: <Hotel sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Reservations', href: '/reservations', icon: <ConfirmationNumber sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Special Offers', href: '/offers', icon: <Discount sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Events', href: '/events', icon: <Event sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Restaurants', href: '/restaurants', icon: <LocalDining sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'About Us', href: '/about', icon: <Info sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Contact', href: '/contact', icon: <ContactPage sx={{ fontSize: 14, mr: 1 }} /> },
+  ];
+
+  const populatedBusinessUnits = businessUnits.length > 0 ? businessUnits.map(unit => ({
+    ...unit,
+    icon: unit.icon || <HouseRounded sx={{ fontSize: 14, mr: 1 }} />
+  })) : [
+    { id: '1', name: 'Anchor Hotel', slug: 'anchor-hotel', city: 'General Santos City', country: 'Philippines', icon: <HouseRounded sx={{ fontSize: 14, mr: 1 }} /> },
+    { id: '2', name: 'Dolores Farm Resort', slug: 'dolores-farm-resort', city: 'General Santos City', country: 'Philippines', icon: <RoomService sx={{ fontSize: 14, mr: 1 }} /> },
+    { id: '3', name: 'Dolores Lake Resort', slug: 'dolores-lake-resort', city: 'General Santos City', country: 'Philippines', icon: <RoomService sx={{ fontSize: 14, mr: 1 }} /> },
+    { id: '4', name: 'Dolores Tropicana Resort', slug: 'dolores-tropicana-resort', city: 'General Santos City', country: 'Philippines', icon: <RoomService sx={{ fontSize: 14, mr: 1 }} /> },
+    { id: '5', name: 'Marina Bay Resort', slug: 'marina-bay-resort', city: 'Davao City', country: 'Philippines', icon: <RoomService sx={{ fontSize: 14, mr: 1 }} /> },
+    { id: '6', name: 'Paradise Beach Hotel', slug: 'paradise-beach-hotel', city: 'Cebu City', country: 'Philippines', icon: <RoomService sx={{ fontSize: 14, mr: 1 }} /> },
+  ];
+
+  const mockFeatures = [
+    { name: 'Loyalty Program', href: '/loyalty', icon: <Handshake sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Gift Cards', href: '/gift-cards', icon: <CardGiftcard sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Sustainability', href: '/sustainability', icon: <Spa sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Careers', href: '/careers', icon: <Work sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Press & Media', href: '/press', icon: <Newspaper sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Sitemap', href: '/sitemap', icon: <Map sx={{ fontSize: 14, mr: 1 }} /> },
+    { name: 'Accessibility', href: '/accessibility', icon: <Accessible sx={{ fontSize: 14, mr: 1 }} /> },
+  ];
+
+  const getSocialIcon = (platform: string) => {
+    const iconProps = { sx: { fontSize: 18 } };
+    switch (platform) {
+      case 'facebook': return <Facebook {...iconProps} />;
+      case 'instagram': return <Instagram {...iconProps} />;
+      case 'twitter': return <Twitter {...iconProps} />;
+      case 'youtube': return <YouTube {...iconProps} />;
+      case 'linkedin': return <LinkedIn {...iconProps} />;
+      default: return null;
     }
   };
 
-  const footerSections = {
-    'Our Properties': [
-      'Anchor Hotel Manila',
-      'Dolores Farm Resort',
-      'Dolores Lake Resort',
-      'Dolores Tropicana Resort',
-      'View All Properties',
-    ],
-    'Guest Services': [
-      'Luxury Accommodation',
-      'Fine Dining',
-      'Event Planning',
-      'Spa & Wellness',
-      'Concierge Services',
-    ],
-    'Company': [
-      'About Tropicana',
-      'Leadership Team',
-      'Careers',
-      'Press Center',
-      'Sustainability',
-    ],
-    'Resources': [
-      'Contact Support',
-      'FAQs',
-      'Booking Guide',
-      'Travel Blog',
-      'Gift Cards',
-    ],
+  const socialLinks = [
+    { platform: 'facebook', url: websiteConfig?.facebookUrl || 'https://facebook.com/tropicanahotels' },
+    { platform: 'instagram', url: websiteConfig?.instagramUrl || 'https://instagram.com/tropicanahotels' },
+    { platform: 'twitter', url: websiteConfig?.twitterUrl || 'https://twitter.com/tropicanahotels' },
+    { platform: 'youtube', url: websiteConfig?.youtubeUrl || 'https://youtube.com/tropicanahotels' },
+    { platform: 'linkedin', url: websiteConfig?.linkedinUrl || 'https://linkedin.com/company/tropicanahotels' },
+  ].filter(link => link.url);
+
+  const linkStyle = {
+    color: theme.textSecondary,
+    textDecoration: 'none',
+    fontSize: '0.78rem',
+    py: 0.2,
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      color: theme.text,
+      paddingLeft: '4px',
+    },
   };
 
-  const awards = [
-    { icon: <StarBorder />, text: 'World Luxury Hotel Awards 2024' },
-    { icon: <Star />, text: '5-Star Rating Certified' },
-    { icon: <Shield />, text: 'Safe Travel Certified' },
-  ];
+  const headingStyle = {
+    color: theme.text,
+    fontSize: '0.85rem',
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    mb: 2,
+  };
+
+  const contactTextStyle = {
+    color: theme.textSecondary,
+    fontSize: '0.78rem',
+    lineHeight: 1.4,
+  };
 
   return (
     <Box
       component="footer"
       sx={{
-        backgroundColor: '#111827',
-        color: 'white',
-        position: 'relative',
-        overflow: 'hidden',
+        backgroundColor: theme.background,
+        color: theme.text,
+        borderTop: `1px solid ${theme.border}`,
+        
       }}
     >
-      {/* Newsletter Section */}
-      <Box
-        sx={{
-          backgroundColor: '#1f2937',
-          py: { xs: 6, md: 8 },
-          position: 'relative',
-        }}
-      >
-        <Container maxWidth="xl">
-          <Box
-            sx={{
-              textAlign: 'center',
-              maxWidth: '800px',
-              mx: 'auto',
-            }}
-          >
-            <Typography
-              sx={{
-                fontWeight: 900,
-                fontSize: { xs: '2rem', md: '3rem' },
-                color: 'white',
-                mb: 3,
-                textTransform: 'uppercase',
-                letterSpacing: '-0.02em',
-                lineHeight: 0.9,
-                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-              }}
-            >
-              Stay in the loop
-            </Typography>
-            <Typography
-              sx={{
-                color: '#9ca3af',
-                fontSize: { xs: '1.1rem', md: '1.2rem' },
-                lineHeight: 1.6,
-                mb: 6,
-                maxWidth: '600px',
-                mx: 'auto',
-              }}
-            >
-              Get exclusive offers, luxury travel tips, and be the first to know
-              about new property openings and special events.
-            </Typography>
-
-            {!subscribed ? (
-              <Box
-                component="form"
-                onSubmit={handleNewsletterSubmit}
-                sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', sm: 'row' },
-                  gap: 2,
-                  maxWidth: '500px',
-                  mx: 'auto',
-                }}
-              >
-                <TextField
-                  fullWidth
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email address"
-                  type="email"
-                  required
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      backgroundColor: 'white',
-                      borderRadius: 0,
-                      height: 56,
-                      '& fieldset': {
-                        borderColor: 'transparent',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: '#6b7280',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#111827',
-                      },
-                    },
-                    '& .MuiInputBase-input': {
-                      fontSize: '1rem',
-                      color: '#111827',
-                      '&::placeholder': {
-                        color: '#6b7280',
-                        opacity: 1,
-                      },
-                    },
-                  }}
-                />
-                <Button
-                  type="submit"
-                  endIcon={<Send sx={{ fontSize: 18 }} />}
-                  sx={{
-                    backgroundColor: 'white',
-                    color: '#111827',
-                    px: 6,
-                    py: 2,
-                    fontSize: '0.875rem',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    borderRadius: 0,
-                    minWidth: { xs: '100%', sm: '180px' },
-                    height: 56,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      backgroundColor: '#f3f4f6',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-                    },
-                  }}
-                >
-                  Subscribe
-                </Button>
-              </Box>
-            ) : (
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 2,
-                  backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                  border: '2px solid #22c55e',
-                  p: 3,
-                  maxWidth: '400px',
-                  mx: 'auto',
-                }}
-              >
-                <CheckCircle sx={{ color: '#22c55e', fontSize: 28 }} />
-                <Typography
-                  sx={{
-                    color: '#22c55e',
-                    fontWeight: 600,
-                    fontSize: '1.1rem',
-                  }}
-                >
-                  Successfully subscribed!
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </Container>
-      </Box>
-
-      {/* Main Footer Content */}
-      <Box sx={{ py: { xs: 8, md: 12 } }}>
-        <Container maxWidth="xl">
+      <Container maxWidth="xl">
+        <Box sx={{ py: { xs: 5, md: 7 } }}>
+          {/* Main Footer Grid - 5 Column Layout */}
           <Box
             sx={{
               display: 'flex',
               flexDirection: { xs: 'column', lg: 'row' },
-              gap: { xs: 8, md: 10 },
-              mb: { xs: 8, md: 12 },
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+              gap: { xs: 4, lg: 4, xl: 8 },
+              mb: 5,
             }}
           >
-            {/* Company Info */}
-            <Box sx={{ flex: { xs: '1', lg: '0 0 350px' } }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-                <HotelIcon sx={{ fontSize: 40, mr: 2, color: 'white' }} />
-                <Typography
-                  sx={{
-                    fontWeight: 900,
-                    fontSize: '1.75rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px',
-                    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-                  }}
-                >
-                  Tropicana Worldwide
-                </Typography>
-              </Box>
-              
+            {/* Column 1: Brand & Contact */}
+            <Box sx={{ flex: { lg: '0 0 240px', xl: '0 0 300px' } }}>
               <Typography
+                variant="h6"
                 sx={{
-                  color: '#9ca3af',
-                  fontSize: '1.1rem',
-                  lineHeight: 1.7,
-                  mb: 5,
+                  fontWeight: 700,
+                  fontSize: { xs: '1.2rem', md: '1.3rem' },
+                  color: theme.text,
+                  mb: 1.5,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  lineHeight: 1.2,
                 }}
               >
-                Experience luxury hospitality at its finest across our premium properties.
-                Creating unforgettable memories and exceptional experiences since 1995.
+                {siteName}
               </Typography>
 
-              {/* Contact Info */}
-              <Stack spacing={3} sx={{ mb: 5 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Phone sx={{ mr: 3, fontSize: 20, color: '#6b7280' }} />
-                  <Box>
-                    <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
-                      +1 (555) 123-4567
-                    </Typography>
-                    <Typography sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                      24/7 Reservations
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Email sx={{ mr: 3, fontSize: 20, color: '#6b7280' }} />
-                  <Box>
-                    <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
-                      reservations@tropicana.com
-                    </Typography>
-                    <Typography sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                      Customer Service
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <LocationOn sx={{ mr: 3, fontSize: 20, color: '#6b7280' }} />
-                  <Box>
-                    <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
-                      Global Headquarters
-                    </Typography>
-                    <Typography sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                      Metro Manila, Philippines
-                    </Typography>
-                  </Box>
-                </Box>
-              </Stack>
-
-              {/* Awards */}
-              <Box>
+              {websiteConfig?.tagline && (
                 <Typography
                   sx={{
+                    color: theme.textMuted,
                     fontSize: '0.75rem',
-                    fontWeight: 700,
-                    color: '#6b7280',
                     mb: 3,
                     textTransform: 'uppercase',
-                    letterSpacing: '2px',
+                    letterSpacing: '0.5px',
+                    fontWeight: 500,
                   }}
                 >
-                  Awards & Certifications
+                  {websiteConfig.tagline}
                 </Typography>
-                <Stack spacing={2}>
-                  {awards.map((award, index) => (
-                    <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Box sx={{ color: '#6b7280', mr: 2 }}>
-                        {award.icon}
-                      </Box>
-                      <Typography sx={{ color: '#9ca3af', fontSize: '0.875rem' }}>
-                        {award.text}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Stack>
-              </Box>
-            </Box>
+              )}
 
-            {/* Links Grid */}
-            <Box
-              sx={{
-                flex: 1,
-                display: 'grid',
-                gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
-                gap: { xs: 6, md: 8 },
-              }}
-            >
-              {Object.entries(footerSections).map(([category, links]) => (
-                <Box key={category}>
-                  <Typography
-                    sx={{
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      color: '#6b7280',
-                      mb: 4,
-                      textTransform: 'uppercase',
-                      letterSpacing: '2px',
-                    }}
-                  >
-                    {category}
+              {/* Contact Info - Compact */}
+              <Box sx={{ mb: 3 }}>
+                {(websiteConfig?.headquarters || 'General Santos City, Philippines') && (
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
+                    <LocationOn sx={{ color: theme.textMuted, mr: 1, fontSize: 16, mt: 0.1 }} />
+                    <Typography sx={contactTextStyle}>
+                      {websiteConfig?.headquarters || 'General Santos City, Philippines'}
+                    </Typography>
+                  </Box>
+                )}
+
+                {(websiteConfig?.primaryPhone || '+63 83 552 8886') && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <Phone sx={{ color: theme.textMuted, mr: 1, fontSize: 16 }} />
+                    <Typography
+                      component="a"
+                      href={`tel:${websiteConfig?.primaryPhone || '+63835528886'}`}
+                      sx={{ ...contactTextStyle, '&:hover': { color: theme.text } }}
+                    >
+                      {websiteConfig?.primaryPhone || '+63 83 552 8886'}
+                    </Typography>
+                  </Box>
+                )}
+
+                {(websiteConfig?.primaryEmail || 'info@tropicanahotels.com') && (
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Email sx={{ color: theme.textMuted, mr: 1, fontSize: 16 }} />
+                    <Typography
+                      component="a"
+                      href={`mailto:${websiteConfig?.primaryEmail || 'info@tropicanahotels.com'}`}
+                      sx={{ ...contactTextStyle, '&:hover': { color: theme.text } }}
+                    >
+                      {websiteConfig?.primaryEmail || 'info@tropicanahotels.com'}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+
+              {/* Social Media - Minimal */}
+              {socialLinks.length > 0 && (
+                <Box sx={{ mb: { xs: 3, lg: 0 } }}>
+                  <Typography sx={headingStyle}>
+                    Follow Us
                   </Typography>
-                  <Stack spacing={2.5}>
-                    {links.map((link, index) => (
-                      <Link
-                        key={link}
-                        href="#"
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    {socialLinks.map(({ platform, url }) => (
+                      <IconButton
+                        key={platform}
+                        component="a"
+                        href={url || '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        size="medium"
                         sx={{
-                          color: index === links.length - 1 ? 'white' : '#9ca3af',
-                          textDecoration: 'none',
-                          fontSize: '0.95rem',
-                          fontWeight: index === links.length - 1 ? 600 : 400,
-                          transition: 'all 0.3s ease',
-                          display: 'flex',
-                          alignItems: 'center',
+                          color: theme.textMuted,
+                          border: `1px solid ${theme.border}`,
+                          borderRadius: '4px',
+                          p: 0.8,
+                          minWidth: 36,
+                          minHeight: 36,
                           '&:hover': {
-                            color: 'white',
-                            transform: 'translateX(4px)',
+                            color: theme.text,
+                            backgroundColor: theme.surface,
+                            borderColor: theme.accent,
                           },
                         }}
                       >
-                        {link}
-                        {index === links.length - 1 && (
-                          <ArrowForward sx={{ ml: 1, fontSize: 16 }} />
-                        )}
-                      </Link>
+                        {getSocialIcon(platform)}
+                      </IconButton>
                     ))}
-                  </Stack>
+                  </Box>
                 </Box>
-              ))}
+              )}
+            </Box>
+
+            {/* Column 2: Quick Links */}
+            <Box sx={{ flex: { xs: '1 1 45%', sm: '0 0 160px', lg: '0 0 180px' } }}>
+              <Typography sx={headingStyle}>
+                Quick Links
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.6 }}>
+                {populatedQuickLinks.slice(0, 8).map((link) => (
+                  <Typography
+                    key={link.name}
+                    component="a"
+                    href={link.href}
+                    sx={{ ...linkStyle, display: 'flex', alignItems: 'center' }}
+                  >
+                    {link.icon}
+                    {link.name}
+                  </Typography>
+                ))}
+              </Box>
+            </Box>
+
+            {/* Column 3: Our Properties */}
+            {businessUnits.length > 0 && (
+              <Box sx={{ flex: { xs: '1 1 45%', sm: '0 0 200px', lg: '0 0 220px' } }}>
+                <Typography sx={headingStyle}>
+                  Our Properties
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.6 }}>
+                  {populatedBusinessUnits.map((property) => (
+                    <Typography
+                      key={property.id}
+                      component="a"
+                      href={`/properties/${property.slug}`}
+                      sx={{ ...linkStyle, display: 'flex', alignItems: 'center' }}
+                    >
+                      {property.icon}
+                      {property.name}
+                    </Typography>
+                  ))}
+                </Box>
+              </Box>
+            )}
+
+            {/* Column 4: Features */}
+            <Box sx={{ flex: { xs: '1 1 45%', sm: '0 0 160px', lg: '0 0 180px' } }}>
+              <Typography sx={headingStyle}>
+                Features
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.6 }}>
+                {mockFeatures.map((link) => (
+                  <Typography
+                    key={link.name}
+                    component="a"
+                    href={link.href}
+                    sx={{ ...linkStyle, display: 'flex', alignItems: 'center' }}
+                  >
+                    {link.icon}
+                    {link.name}
+                  </Typography>
+                ))}
+              </Box>
+            </Box>
+
+            {/* Column 5: Newsletter Subscribe */}
+            <Box sx={{ flex: { xs: '1 1 100%', lg: '1 1 auto' }, minWidth: '250px' }}>
+              <Typography sx={headingStyle}>
+                Subscribe to our Newsletter
+              </Typography>
+              <Typography sx={{ color: theme.textSecondary, fontSize: '0.8rem', mb: 2 }}>
+                Get the latest news and special offers directly to your inbox.
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 1.5 }}>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  placeholder="Enter your email"
+                  sx={{
+                    flex: 1,
+                    '& .MuiOutlinedInput-root': {
+                      color: theme.textSecondary,
+                      '& fieldset': { borderColor: theme.border },
+                      '&:hover fieldset': { borderColor: theme.accent },
+                      '&.Mui-focused fieldset': { borderColor: theme.primary },
+                      borderRadius: '4px',
+                    },
+                    '& .MuiInputBase-input::placeholder': {
+                      color: theme.textMuted,
+                      opacity: 1,
+                    },
+                  }}
+                />
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: theme.primary,
+                    color: theme.background,
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    fontSize: '0.8rem',
+                    letterSpacing: '0.5px',
+                    py: 1.2,
+                    minWidth: 'auto',
+                    '&:hover': {
+                      backgroundColor: theme.textSecondary,
+                    },
+                  }}
+                >
+                  <Send sx={{ fontSize: 16 }} />
+                </Button>
+              </Box>
             </Box>
           </Box>
 
-          <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', mb: 6 }} />
-
           {/* Bottom Section */}
+          <Divider sx={{ borderColor: theme.border, mb: 3 }} />
           <Box
             sx={{
               display: 'flex',
               flexDirection: { xs: 'column', md: 'row' },
               justifyContent: 'space-between',
-              alignItems: { xs: 'center', md: 'flex-start' },
-              gap: 4,
+              alignItems: { xs: 'flex-start', md: 'center' },
+              gap: 2,
             }}
           >
-            <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-              <Typography
-                sx={{
-                  color: '#6b7280',
-                  fontSize: '0.875rem',
-                  mb: 2,
-                }}
-              >
-                © {currentYear} Tropicana Worldwide Corporation. All rights reserved.
-              </Typography>
-              <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                spacing={3}
-                sx={{ alignItems: { xs: 'center', md: 'flex-start' } }}
-              >
-                <Link
-                  href="#"
-                  sx={{
-                    color: '#6b7280',
-                    fontSize: '0.875rem',
-                    textDecoration: 'none',
-                    '&:hover': { color: 'white' },
-                  }}
-                >
-                  Privacy Policy
-                </Link>
-                <Link
-                  href="#"
-                  sx={{
-                    color: '#6b7280',
-                    fontSize: '0.875rem',
-                    textDecoration: 'none',
-                    '&:hover': { color: 'white' },
-                  }}
-                >
-                  Terms of Service
-                </Link>
-                <Link
-                  href="#"
-                  sx={{
-                    color: '#6b7280',
-                    fontSize: '0.875rem',
-                    textDecoration: 'none',
-                    '&:hover': { color: 'white' },
-                  }}
-                >
-                  Cookie Policy
-                </Link>
-              </Stack>
-            </Box>
+            <Typography
+              sx={{
+                color: theme.textMuted,
+                fontSize: '0.75rem',
+                order: { xs: 2, md: 1 },
+              }}
+            >
+              © {currentYear} {companyName}. All rights reserved.
+            </Typography>
 
-            {/* Social Media */}
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography
-                sx={{
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  color: '#6b7280',
-                  mb: 3,
-                  textTransform: 'uppercase',
-                  letterSpacing: '2px',
-                }}
-              >
-                Follow Us
-              </Typography>
-              <Stack direction="row" spacing={2} sx={{ justifyContent: 'center' }}>
-                {[
-                  { icon: <Facebook />, label: 'Facebook', color: '#1877f2' },
-                  { icon: <Twitter />, label: 'Twitter', color: '#1da1f2' },
-                  { icon: <Instagram />, label: 'Instagram', color: '#e4405f' },
-                  { icon: <LinkedIn />, label: 'LinkedIn', color: '#0077b5' },
-                  { icon: <YouTube />, label: 'YouTube', color: '#ff0000' },
-                ].map((social) => (
-                  <IconButton
-                    key={social.label}
-                    sx={{
-                      width: 48,
-                      height: 48,
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      color: '#9ca3af',
-                      border: '2px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: 0,
-                      transition: 'all 0.3s ease',
-                      '&:hover': {
-                        backgroundColor: social.color,
-                        borderColor: social.color,
-                        color: 'white',
-                        transform: 'translateY(-4px)',
-                        boxShadow: `0 8px 16px ${social.color}40`,
-                      },
-                    }}
-                    aria-label={social.label}
-                  >
-                    {social.icon}
-                  </IconButton>
-                ))}
-              </Stack>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 2.5,
+                flexWrap: 'wrap',
+                order: { xs: 1, md: 2 },
+              }}
+            >
+              {[
+                { name: 'Privacy Policy', url: websiteConfig?.privacyPolicyUrl || '/privacy' },
+                { name: 'Terms of Service', url: websiteConfig?.termsOfServiceUrl || '/terms' },
+                { name: 'Cookie Policy', url: websiteConfig?.cookiePolicyUrl || '/cookies' },
+                { name: 'Careers', url: '/careers' },
+              ].map((link) => (
+                <Typography
+                  key={link.name}
+                  component="a"
+                  href={link.url}
+                  sx={{
+                    color: theme.textMuted,
+                    fontSize: '0.75rem',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s ease',
+                    '&:hover': { color: theme.textSecondary },
+                  }}
+                >
+                  {link.name}
+                </Typography>
+              ))}
             </Box>
           </Box>
-        </Container>
-      </Box>
+        </Box>
+      </Container>
     </Box>
   );
 };

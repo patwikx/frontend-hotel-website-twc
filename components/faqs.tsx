@@ -332,6 +332,7 @@ const FAQ: React.FC = () => {
             maxWidth: '800px',
             mx: 'auto',
             mt: { xs: 8, md: 12 },
+            mb: { xs: 8, md: 12 },
             transition: 'all 0.3s ease',
             '&:hover': {
               borderColor: pitchBlackTheme.text,

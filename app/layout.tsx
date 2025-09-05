@@ -1,9 +1,9 @@
 import "./globals.css";
 import Header from '@/components/header';
+import Footer from "@/components/footer";
 import { CssBaseline } from '@mui/material';
 import { getWebsiteConfiguration } from "@/lib/website-config";
 import { getBusinessUnits } from "@/lib/actions/business-units";
-
 
 export const metadata = {
   title: "Tropicana Worldwide Corp.",
@@ -19,21 +19,47 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Use your existing server actions instead of inline Prisma queries
+  // Use your existing server actions
   const [websiteConfig, businessUnits] = await Promise.all([
     getWebsiteConfiguration(),
-    getBusinessUnits(), // This already returns BusinessUnitData[] with proper caching
+    getBusinessUnits(),
   ]);
 
- return (
+  // Define quick links for footer navigation
+  const quickLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'Properties', href: '/properties' },
+    { name: 'Reservations', href: '/reservations' },
+    { name: 'Special Offers', href: '/offers' },
+    { name: 'Events', href: '/events' },
+    { name: 'Restaurants', href: '/dining' },
+    { name: 'About Us', href: '/about' },
+    { name: 'Contact', href: '/contact' },
+  ];
+
+  return (
     <html lang="en">
-      {/* Change this to match your components' theme */}
       <body style={{ backgroundColor: '#000000', color: '#e2e8f0' }}>
         <CssBaseline />
-        <Header businessUnits={businessUnits} websiteConfig={websiteConfig} />
-        <main style={{ paddingTop: '70px' }}>
-          {children}
-        </main>
+        
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          minHeight: '100vh',
+          backgroundColor: '#000000',
+        }}>
+          <Header businessUnits={businessUnits} websiteConfig={websiteConfig} />
+          
+          <main style={{ flex: 1, paddingTop: '70px' }}>
+            {children}
+          </main>
+          
+          <Footer
+            websiteConfig={websiteConfig}
+            businessUnits={businessUnits}
+            quickLinks={quickLinks}
+          />
+        </div>
       </body>
     </html>
   );
