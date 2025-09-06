@@ -28,26 +28,28 @@ export async function GET(request: NextRequest) {
     const { businessUnitId, roomTypeId, checkInDate, checkOutDate } = validatedData;
     
     // Parse dates
-    const checkIn = new Date(checkInDate);
-    const checkOut = new Date(checkOutDate);
-    
-    // Validate date logic
-    if (checkIn >= checkOut) {
-      return NextResponse.json(
-        { error: 'Check-out date must be after check-in date' },
-        { status: 400 }
-      );
-    }
+ const checkIn = new Date(checkInDate);
+const checkOut = new Date(checkOutDate);
 
-    // Check if dates are in the past
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    if (checkIn < today) {
-      return NextResponse.json(
-        { error: 'Check-in date cannot be in the past' },
-        { status: 400 }
-      );
-    }
+// Validate date logic
+if (checkIn >= checkOut) {
+  return NextResponse.json(
+    { error: 'Check-out date must be after check-in date' },
+    { status: 400 }
+  );
+}
+
+// Check if dates are in the past using UTC for consistency
+const today = new Date();
+// Create a new date for the beginning of the current day in UTC
+const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+
+if (checkIn < todayUTC) {
+  return NextResponse.json(
+    { error: 'Check-in date cannot be in the past' },
+    { status: 400 }
+  );
+}
 
     // Verify business unit and room type exist and are active
     const businessUnit = await prisma.businessUnit.findFirst({
