@@ -11,6 +11,7 @@ import {
   Container,
   Drawer,
   Paper,
+  Skeleton,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -52,6 +53,58 @@ interface HeaderProps {
   websiteConfig: WebsiteConfigData | null;
 }
 
+// Skeleton Item Component
+const SkeletonPropertyItem: React.FC<{ index: number }> = ({ index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ 
+      delay: 0.1 + index * 0.05, 
+      duration: 0.4,
+      ease: [0.4, 0, 0.2, 1]
+    }}
+    style={{ width: '100%' }}
+  >
+    <Box
+      sx={{
+        width: '100%',
+        p: 3,
+        borderRadius: 0,
+        border: `1px solid ${pitchBlackTheme.border}`,
+        height: '120px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        backgroundColor: pitchBlackTheme.surface,
+      }}
+    >
+      <Skeleton
+        variant="text"
+        sx={{
+          fontSize: '1rem',
+          mb: 1,
+          backgroundColor: pitchBlackTheme.border,
+          '&::after': {
+            background: `linear-gradient(90deg, transparent, ${pitchBlackTheme.textSecondary}40, transparent)`,
+          },
+        }}
+        width="80%"
+      />
+      <Skeleton
+        variant="text"
+        sx={{
+          fontSize: '0.875rem',
+          backgroundColor: pitchBlackTheme.border,
+          '&::after': {
+            background: `linear-gradient(90deg, transparent, ${pitchBlackTheme.textSecondary}40, transparent)`,
+          },
+        }}
+        width="60%"
+      />
+    </Box>
+  </motion.div>
+);
+
 const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [propertiesDropdownOpen, setPropertiesDropdownOpen] = useState(false);
@@ -63,12 +116,12 @@ const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const propertiesButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Handle mounting to prevent hydration errors
+  const isLoading = !businessUnits || businessUnits.length === 0;
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Check if device is mobile
   useEffect(() => {
     if (!mounted) return;
     
@@ -82,7 +135,6 @@ const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, [mounted]);
 
-  // Handle scroll effect
   useEffect(() => {
     if (!mounted) return;
     
@@ -94,7 +146,6 @@ const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [mounted]);
 
-  // Effect to handle clicks outside the dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -115,7 +166,7 @@ const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
 
   const handleMobileDrawerToggle = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
-    setMobilePropertiesOpen(false); // Close properties when closing drawer
+    setMobilePropertiesOpen(false);
   };
 
   const handlePropertiesToggle = () => {
@@ -156,7 +207,6 @@ const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
     return parts.join(', ');
   };
 
-  // Fixed animation variants
   const drawerVariants: Variants = {
     closed: {
       opacity: 0,
@@ -615,7 +665,6 @@ const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
     </motion.div>
   );
 
-  // Don't render anything until mounted to prevent hydration errors
   if (!mounted) {
     return null;
   }
@@ -640,7 +689,7 @@ const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
             sx={{
               justifyContent: 'space-between',
               py: 2,
-              minHeight: '70px',
+              minHeight: '120px',
             }}
           >
             <motion.div
@@ -766,14 +815,18 @@ const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
                       Properties
                     </Button>
                     
-                    {/* Fixed Dropdown for Properties */}
+                    {/* Fixed Dropdown - Removed layout animation and scale to prevent flickering */}
                     <AnimatePresence>
                       {propertiesDropdownOpen && (
                         <motion.div
-                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                          transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                          initial={{ opacity: 0, y: -8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ 
+                            duration: 0.25,
+                            ease: [0.4, 0, 0.2, 1]
+                          }}
+                          style={{ position: 'absolute', zIndex: 1300 }}
                         >
                           <Paper
                             ref={dropdownRef}
@@ -782,17 +835,16 @@ const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
                               top: '100%',
                               left: '50%',
                               transform: 'translateX(-50%)',
-                              mt: 1,
+                              mt: 6,
                               width: '800px',
                               backgroundColor: pitchBlackTheme.surface,
                               boxShadow: `0 20px 40px ${pitchBlackTheme.selectedBg}`,
                               borderRadius: 0,
-                              overflow: 'hidden',
-                              zIndex: 1300,
                               border: `1px solid ${pitchBlackTheme.border}`,
+                              transformOrigin: 'top center',
                             }}
                           >
-                            <Box sx={{ p: 4 }}>
+                            <Box sx={{ p: 4, pb: 2 }}>
                               <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -837,142 +889,148 @@ const Header: React.FC<HeaderProps> = ({ businessUnits, websiteConfig }) => {
                                   width: '100%',
                                 }}
                               >
-                                {businessUnits.map((property, index) => (
-                                  <motion.div
-                                    key={property.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ 
-                                      delay: 0.2 + index * 0.05, 
-                                      duration: 0.4,
-                                      ease: [0.4, 0, 0.2, 1]
-                                    }}
-                                    style={{ width: '100%' }}
-                                  >
-                                    <Box
-                                      onClick={() => handlePropertyClick(property.slug)}
-                                      sx={{
-                                        width: '100%',
-                                        cursor: 'pointer',
-                                        p: 3,
-                                        borderRadius: 0,
-                                        border: `1px solid transparent`,
-                                        transition: 'all 0.3s ease',
-                                        position: 'relative',
-                                        overflow: 'hidden',
-                                        minHeight: '90px',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        '&::before': {
-                                          content: '""',
-                                          position: 'absolute',
-                                          top: 0,
-                                          left: 0,
-                                          right: 0,
-                                          bottom: 0,
-                                          backgroundColor: pitchBlackTheme.primaryHover,
-                                          transform: 'translateX(-100%)',
-                                          transition: 'transform 0.3s ease',
-                                          zIndex: 0,
-                                        },
-                                        '&:hover': {
-                                          borderColor: pitchBlackTheme.primaryHover,
-                                          transform: 'translateY(-2px)',
-                                          boxShadow: `0 4px 12px ${pitchBlackTheme.selectedBg}`,
-                                          '&::before': {
-                                            transform: 'translateX(0%)',
-                                          },
-                                          '& .property-name': {
-                                            color: pitchBlackTheme.primary,
-                                          },
-                                          '& .property-location': {
-                                            color: pitchBlackTheme.primary,
-                                          },
-                                        },
+                                {isLoading ? (
+                                  Array.from({ length: 4 }).map((_, index) => (
+                                    <SkeletonPropertyItem key={`skeleton-${index}`} index={index} />
+                                  ))
+                                ) : (
+                                  businessUnits.map((property, index) => (
+                                    <motion.div
+                                      key={property.id}
+                                      initial={{ opacity: 0, y: 20 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      transition={{ 
+                                        delay: 0.1 + index * 0.08, 
+                                        duration: 0.5,
+                                        ease: [0.4, 0, 0.2, 1]
                                       }}
+                                      style={{ width: '100%' }}
                                     >
-                                      <Typography
-                                        className="property-name"
+                                      <Box
+                                        onClick={() => handlePropertyClick(property.slug)}
                                         sx={{
-                                          fontWeight: 900,
-                                          fontSize: '1rem',
-                                          color: pitchBlackTheme.text,
-                                          textTransform: 'uppercase',
-                                          letterSpacing: '0.5px',
-                                          mb: 1,
-                                          transition: 'color 0.3s ease',
+                                          width: '100%',
+                                          cursor: 'pointer',
+                                          p: 3,
+                                          borderRadius: 0,
+                                          border: `1px solid transparent`,
+                                          transition: 'all 0.3s ease',
                                           position: 'relative',
-                                          zIndex: 1,
-                                          wordBreak: 'break-word',
-                                          lineHeight: 1.2,
                                           overflow: 'hidden',
-                                          textOverflow: 'ellipsis',
-                                          display: '-webkit-box',
-                                          WebkitLineClamp: 2,
-                                          WebkitBoxOrient: 'vertical',
+                                          minHeight: '120px',
+                                          display: 'flex',
+                                          flexDirection: 'column',
+                                          justifyContent: 'center',
+                                          '&::before': {
+                                            content: '""',
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            backgroundColor: pitchBlackTheme.primaryHover,
+                                            transform: 'translateX(-100%)',
+                                            transition: 'transform 0.3s ease',
+                                            zIndex: 0,
+                                          },
+                                          '&:hover': {
+                                            borderColor: pitchBlackTheme.primaryHover,
+                                            transform: 'translateY(-2px)',
+                                            boxShadow: `0 4px 12px ${pitchBlackTheme.selectedBg}`,
+                                            '&::before': {
+                                              transform: 'translateX(0%)',
+                                            },
+                                            '& .property-name': {
+                                              color: pitchBlackTheme.primary,
+                                            },
+                                            '& .property-location': {
+                                              color: pitchBlackTheme.primary,
+                                            },
+                                          },
                                         }}
                                       >
-                                        {property.displayName}
-                                      </Typography>
-                                      <Typography
-                                        className="property-location"
-                                        sx={{
-                                          fontSize: '0.875rem',
-                                          color: pitchBlackTheme.textSecondary,
-                                          fontWeight: 500,
-                                          transition: 'color 0.3s ease',
-                                          position: 'relative',
-                                          zIndex: 1,
-                                          wordBreak: 'break-word',
-                                          lineHeight: 1.3,
-                                          overflow: 'hidden',
-                                          textOverflow: 'ellipsis',
-                                          display: '-webkit-box',
-                                          WebkitLineClamp: 2,
-                                          WebkitBoxOrient: 'vertical',
-                                        }}
-                                      >
-                                        {formatLocation(property)}
-                                      </Typography>
-                                    </Box>
-                                  </motion.div>
-                                ))}
+                                        <Typography
+                                          className="property-name"
+                                          sx={{
+                                            fontWeight: 900,
+                                            fontSize: '1rem',
+                                            color: pitchBlackTheme.text,
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.5px',
+                                            mb: 1,
+                                            transition: 'color 0.3s ease',
+                                            position: 'relative',
+                                            zIndex: 1,
+                                            wordBreak: 'break-word',
+                                            lineHeight: 1.2,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: 'vertical',
+                                          }}
+                                        >
+                                          {property.displayName}
+                                        </Typography>
+                                        <Typography
+                                          className="property-location"
+                                          sx={{
+                                            fontSize: '0.875rem',
+                                            color: pitchBlackTheme.textSecondary,
+                                            fontWeight: 500,
+                                            transition: 'color 0.3s ease',
+                                            position: 'relative',
+                                            zIndex: 1,
+                                            wordBreak: 'break-word',
+                                            lineHeight: 1.3,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: 'vertical',
+                                          }}
+                                        >
+                                          {formatLocation(property)}
+                                        </Typography>
+                                      </Box>
+                                    </motion.div>
+                                  ))
+                                )}
                               </Box>
-
+                            </Box>
+                            
+                            <Box sx={{ textAlign: 'center', px: 4, pt: 0, pb: 4 }}>
                               <motion.div
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5, duration: 0.4 }}
+                                transition={{ delay: isLoading ? 1.2 : 0.8, duration: 0.4 }}
                               >
-                                <Box sx={{ textAlign: 'center', mt: 4 }}>
-                                  <Button
-                                    onClick={handleViewAllProperties}
-                                    sx={{
-                                      backgroundColor: pitchBlackTheme.primary,
-                                      color: pitchBlackTheme.text,
-                                      border: `2px solid ${pitchBlackTheme.text}`,
-                                      px: 6,
-                                      py: 2,
-                                      fontSize: '1rem',
-                                      fontWeight: 700,
-                                      textTransform: 'uppercase',
-                                      letterSpacing: '1px',
-                                      borderRadius: 0,
-                                      transition: 'all 0.3s ease',
-                                      whiteSpace: 'nowrap',
-                                      '&:hover': {
-                                        backgroundColor: pitchBlackTheme.primaryHover,
-                                        borderColor: pitchBlackTheme.primaryHover,
-                                        color: pitchBlackTheme.primary,
-                                        transform: 'translateY(-2px)',
-                                        boxShadow: `0 8px 16px ${pitchBlackTheme.selectedBg}`,
-                                      },
-                                    }}
-                                  >
-                                    View All Properties
-                                  </Button>
-                                </Box>
+                                <Button
+                                  onClick={handleViewAllProperties}
+                                  sx={{
+                                    backgroundColor: pitchBlackTheme.primary,
+                                    color: pitchBlackTheme.text,
+                                    border: `2px solid ${pitchBlackTheme.text}`,
+                                    px: 6,
+                                    py: 2,
+                                    fontSize: '1rem',
+                                    fontWeight: 700,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '1px',
+                                    borderRadius: 0,
+                                    transition: 'all 0.3s ease',
+                                    whiteSpace: 'nowrap',
+                                    '&:hover': {
+                                      backgroundColor: pitchBlackTheme.primaryHover,
+                                      borderColor: pitchBlackTheme.primaryHover,
+                                      color: pitchBlackTheme.primary,
+                                      transform: 'translateY(-2px)',
+                                      boxShadow: `0 8px 16px ${pitchBlackTheme.selectedBg}`,
+                                    },
+                                  }}
+                                >
+                                  View All Properties
+                                </Button>
                               </motion.div>
                             </Box>
                           </Paper>

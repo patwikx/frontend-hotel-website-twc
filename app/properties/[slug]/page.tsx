@@ -1,7 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
-import { Box, Container, Typography, Button, Card, CardContent, Chip } from '@mui/material';
-import { LocationOn, Phone, Email, ArrowForward, Bed, People } from '@mui/icons-material';
+import { Box, Container, Typography, Button, Chip } from '@mui/material';
+import { LocationOn, Phone, Email, ArrowForward, Bed, People, Wifi, Restaurant, LocalParking, FitnessCenter, Pool, Spa, RoomService, Star } from '@mui/icons-material';
 import Link from 'next/link';
 import { getPropertyWithRooms } from '@/lib/room-details';
 
@@ -50,13 +50,24 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                      property.images[0]?.image.originalUrl || 
                      'https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=1920';
 
+  // Mock amenities - in real app, this would come from your data
+  const amenities = [
+    { icon: Wifi, label: 'Free WiFi' },
+    { icon: Restaurant, label: 'Fine Dining' },
+    { icon: Pool, label: 'Swimming Pool' },
+    { icon: FitnessCenter, label: 'Fitness Center' },
+    { icon: Spa, label: 'Spa & Wellness' },
+    { icon: LocalParking, label: 'Valet Parking' },
+    { icon: RoomService, label: '24/7 Room Service' },
+  ];
+
   return (
     <Box sx={{ backgroundColor: pitchBlackTheme.background, color: pitchBlackTheme.text, minHeight: '100vh' }}>
       {/* Hero Section */}
       <Box
         sx={{
           position: 'relative',
-          height: '70vh',
+          height: '100vh',
           backgroundImage: `url(${primaryImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -69,12 +80,12 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
           },
         }}
       >
         <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 2 }}>
-          <Box sx={{ maxWidth: '800px' }}>
+          <Box sx={{ maxWidth: '900px' }}>
             <Chip
               label={getPropertyTypeDisplay(property.propertyType)}
               sx={{
@@ -97,7 +108,7 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
             <Typography
               sx={{
                 fontWeight: 700,
-                fontSize: { xs: '3rem', md: '4rem', lg: '5rem' },
+                fontSize: { xs: '3rem', md: '5rem', lg: '6rem' },
                 color: 'white',
                 mb: 3,
                 textTransform: 'uppercase',
@@ -110,11 +121,11 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
               {property.displayName}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-              <LocationOn sx={{ color: 'white', mr: 1, fontSize: 24 }} />
+              <LocationOn sx={{ color: 'white', mr: 1, fontSize: 28 }} />
               <Typography
                 sx={{
                   color: 'white',
-                  fontSize: '1.25rem',
+                  fontSize: '1.5rem',
                   fontWeight: 600,
                   textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
                   textTransform: 'uppercase',
@@ -131,12 +142,43 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
                 fontSize: '1.25rem',
                 lineHeight: 1.6,
                 mb: 6,
-                maxWidth: '600px',
+                maxWidth: '700px',
                 textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
               }}
             >
               {property.shortDescription || property.description}
             </Typography>
+
+            {/* Key Stats */}
+            <Box sx={{ display: 'flex', gap: 4, mb: 6, flexWrap: 'wrap' }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ fontSize: '2.5rem', fontWeight: 700, color: 'white', lineHeight: 1 }}>
+                  {property.roomTypes.length}
+                </Typography>
+                <Typography sx={{ color: pitchBlackTheme.textSecondary, textTransform: 'uppercase', fontSize: '0.9rem', letterSpacing: '1px' }}>
+                  Room Types
+                </Typography>
+              </Box>
+              <Box sx={{ borderLeft: '1px solid rgba(255,255,255,0.3)', pl: 4, textAlign: 'center' }}>
+                <Typography sx={{ fontSize: '2.5rem', fontWeight: 700, color: 'white', lineHeight: 1 }}>
+                  {property.roomTypes.reduce((acc, room) => acc + room._count.rooms, 0)}
+                </Typography>
+                <Typography sx={{ color: pitchBlackTheme.textSecondary, textTransform: 'uppercase', fontSize: '0.9rem', letterSpacing: '1px' }}>
+                  Total Rooms
+                </Typography>
+              </Box>
+              <Box sx={{ borderLeft: '1px solid rgba(255,255,255,0.3)', pl: 4, textAlign: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1 }}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star key={star} sx={{ color: '#ffd700', fontSize: '1.2rem' }} />
+                  ))}
+                </Box>
+                <Typography sx={{ color: pitchBlackTheme.textSecondary, textTransform: 'uppercase', fontSize: '0.9rem', letterSpacing: '1px' }}>
+                  Luxury Rating
+                </Typography>
+              </Box>
+            </Box>
+
             <Button
               endIcon={<ArrowForward sx={{ fontSize: 16, transition: 'color 0.3s ease' }} />}
               sx={{
@@ -169,273 +211,375 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
             </Button>
           </Box>
         </Container>
+
+        {/* Scroll indicator */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 30,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            animation: 'bounce 2s infinite',
+            '@keyframes bounce': {
+              '0%, 20%, 50%, 80%, 100%': { transform: 'translateX(-50%) translateY(0)' },
+              '40%': { transform: 'translateX(-50%) translateY(-10px)' },
+              '60%': { transform: 'translateX(-50%) translateY(-5px)' },
+            },
+          }}
+        >
+          <Box
+            sx={{
+              width: 2,
+              height: 40,
+              backgroundColor: 'white',
+              opacity: 0.7,
+            }}
+          />
+        </Box>
       </Box>
 
-      {/* Property Details */}
-      <Container maxWidth="xl" sx={{ py: { xs: 8, md: 12 } }}>
-        {/* Property Gallery */}
-        {property.images.length > 1 && (
-          <Box sx={{ mb: { xs: 8, md: 12 } }}>
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: { xs: '2rem', md: '3rem' },
-                color: pitchBlackTheme.text,
-                mb: 6,
-                textTransform: 'uppercase',
-                letterSpacing: '0.02em',
-                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-              }}
-            >
-              Property Gallery
-            </Typography>
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: {
-                  xs: '1fr',
-                  md: 'repeat(3, 1fr)',
-                  lg: 'repeat(3, 1fr)'
-                },
-                gap: 4,
-              }}
-            >
-              {property.images.slice(1, 7).map((imageRelation) => (
-                <Box
-                  key={imageRelation.id}
-                  sx={{
-                    position: 'relative',
-                    height: 250,
-                    borderRadius: 0,
-                    overflow: 'hidden',
-                    backgroundImage: `url(${imageRelation.image.originalUrl})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    border: `1px solid ${pitchBlackTheme.border}`,
-                    '&:hover': {
-                      transform: 'scale(1.05)',
-                      borderColor: pitchBlackTheme.text,
-                      boxShadow: `0 8px 24px ${pitchBlackTheme.selectedBg}`,
-                    },
-                  }}
-                >
-                  {imageRelation.image.title && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        background: 'linear-gradient(transparent, rgba(0,0,0,0.9))',
-                        p: 2,
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          color: 'white',
-                          fontWeight: 600,
-                          fontSize: '1rem',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                          fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-                        }}
-                      >
-                        {imageRelation.image.title}
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
-              ))}
-            </Box>
-          </Box>
-        )}
-
-        {/* Room Types Section */}
-        {property.roomTypes.length > 0 && (
-          <Box sx={{ mb: { xs: 8, md: 12 } }}>
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: { xs: '2rem', md: '3rem' },
-                color: pitchBlackTheme.text,
-                mb: 6,
-                textTransform: 'uppercase',
-                letterSpacing: '0.02em',
-                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-              }}
-            >
-              Our Rooms & Suites
-            </Typography>
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: {
-                  xs: '1fr',
-                  md: 'repeat(2, 1fr)',
-                  lg: 'repeat(3, 1fr)'
-                },
-                gap: 4,
-              }}
-            >
-              {property.roomTypes.map((roomType) => (
-                <Card
-                  key={roomType.id}
-                  sx={{
-                    backgroundColor: pitchBlackTheme.surface,
-                    border: `1px solid ${pitchBlackTheme.border}`,
-                    borderRadius: 0,
-                    height: '100%',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: `0 20px 40px ${pitchBlackTheme.selectedBg}`,
-                      borderColor: pitchBlackTheme.text,
-                    },
-                  }}
-                >
-                  {roomType.images.length > 0 && (
-                    <Box
-                      sx={{
-                        height: 200,
-                        backgroundImage: `url(${roomType.images[0].image.originalUrl})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        position: 'relative',
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 12,
-                          right: 12,
-                          backgroundColor: pitchBlackTheme.accent,
-                          color: 'white',
-                          px: 2,
-                          py: 1,
-                          borderRadius: 0,
-                          fontSize: '0.875rem',
-                          fontWeight: 600,
-                        }}
-                      >
-                        {formatCurrency(roomType.baseRate, roomType.currency)}
-                      </Box>
-                    </Box>
-                  )}
-                  <CardContent sx={{ p: 3 }}>
-                    <Typography
-                      sx={{
-                        fontWeight: 700,
-                        fontSize: '1.25rem',
-                        color: pitchBlackTheme.text,
-                        mb: 2,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
-                      }}
-                    >
-                      {roomType.displayName}
-                    </Typography>
-                    
-                    {/* Room Stats */}
-                    <Box sx={{ display: 'flex', gap: 3, mb: 3, flexWrap: 'wrap' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <People sx={{ fontSize: 16, color: pitchBlackTheme.textSecondary }} />
-                        <Typography sx={{ fontSize: '0.875rem', color: pitchBlackTheme.textSecondary }}>
-                          {roomType.maxOccupancy} guests
-                        </Typography>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Bed sx={{ fontSize: 16, color: pitchBlackTheme.textSecondary }} />
-                        <Typography sx={{ fontSize: '0.875rem', color: pitchBlackTheme.textSecondary }}>
-                          {roomType._count.rooms} available
-                        </Typography>
-                      </Box>
-                    </Box>
-
-                    <Typography
-                      sx={{
-                        color: pitchBlackTheme.textSecondary,
-                        mb: 3,
-                        lineHeight: 1.6,
-                        fontSize: '0.95rem',
-                      }}
-                    >
-                      {roomType.description}
-                    </Typography>
-                    <Button
-                      fullWidth
-                      component={Link}
-                      href={`/properties/${property.slug}/rooms/${roomType.id}`}
-                      sx={{
-                        backgroundColor: pitchBlackTheme.primary,
-                        color: pitchBlackTheme.text,
-                        border: `2px solid ${pitchBlackTheme.text}`,
-                        py: 1.5,
-                        fontWeight: 900,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.15em',
-                        borderRadius: 0,
-                        fontFamily: '"Arial Black", "Helvetica", sans-serif',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          backgroundColor: pitchBlackTheme.primaryHover,
-                          borderColor: pitchBlackTheme.primaryHover,
-                          color: pitchBlackTheme.primary,
-                          transform: 'translateY(-2px)',
-                        },
-                      }}
-                    >
-                      View Details
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
-          </Box>
-        )}
-
-        {/* Contact Information */}
-        <Box sx={{ mb: { xs: 8, md: 12 } }}>
+      {/* Amenities Section */}
+      <Container maxWidth="xl" sx={{ py: { xs: 10, md: 15 } }}>
+        <Box sx={{ textAlign: 'center', mb: 8 }}>
           <Typography
             sx={{
               fontWeight: 700,
-              fontSize: { xs: '2rem', md: '3rem' },
+              fontSize: { xs: '2.5rem', md: '4rem' },
               color: pitchBlackTheme.text,
-              mb: 6,
+              mb: 4,
               textTransform: 'uppercase',
               letterSpacing: '0.02em',
               fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
             }}
           >
-            Contact Information
+            World-Class Amenities
           </Typography>
-          <Box
+          <Typography
             sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr',
-                md: 'repeat(3, 1fr)'
-              },
-              gap: 4,
+              color: pitchBlackTheme.textSecondary,
+              fontSize: '1.2rem',
+              maxWidth: '600px',
+              mx: 'auto',
+              lineHeight: 1.6,
             }}
           >
-            <Card
+            Experience unparalleled luxury with our comprehensive suite of premium amenities and services
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: 6,
+          }}
+        >
+          {amenities.map((amenity, index) => (
+            <Box
+              key={index}
               sx={{
-                backgroundColor: pitchBlackTheme.surface,
-                border: `1px solid ${pitchBlackTheme.border}`,
-                borderRadius: 0,
-                p: 3,
                 textAlign: 'center',
                 transition: 'all 0.3s ease',
+                cursor: 'pointer',
                 '&:hover': {
-                  borderColor: pitchBlackTheme.text,
-                  transform: 'translateY(-4px)',
-                  boxShadow: `0 8px 24px ${pitchBlackTheme.selectedBg}`,
+                  transform: 'translateY(-8px)',
+                  '& .amenity-icon': {
+                    color: pitchBlackTheme.accent,
+                    transform: 'scale(1.1)',
+                  },
                 },
               }}
             >
+              <amenity.icon 
+                className="amenity-icon"
+                sx={{ 
+                  fontSize: 48, 
+                  color: pitchBlackTheme.text, 
+                  mb: 2,
+                  transition: 'all 0.3s ease',
+                }} 
+              />
+              <Typography
+                sx={{
+                  color: pitchBlackTheme.text,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontSize: '0.9rem',
+                  fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+                }}
+              >
+                {amenity.label}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      </Container>
+
+      {/* Immersive Gallery Section */}
+      {property.images.length > 1 && (
+        <Box sx={{ py: { xs: 10, md: 15 } }}>
+          <Container maxWidth="xl" sx={{ mb: 8 }}>
+            <Typography
+              sx={{
+                fontWeight: 700,
+                fontSize: { xs: '2.5rem', md: '4rem' },
+                color: pitchBlackTheme.text,
+                textAlign: 'center',
+                textTransform: 'uppercase',
+                letterSpacing: '0.02em',
+                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+              }}
+            >
+              Visual Journey
+            </Typography>
+          </Container>
+
+          {/* Large featured image */}
+          <Box sx={{ mb: 4 }}>
+            <Box
+              sx={{
+                height: '70vh',
+                backgroundImage: `url(${property.images[1]?.image.originalUrl || primaryImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                position: 'relative',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '30%',
+                  background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                },
+              }}
+            />
+          </Box>
+
+          {/* Image strip */}
+          <Box sx={{ display: 'flex', height: '250px', gap: 1, overflow: 'hidden' }}>
+            {property.images.slice(2, 6).map((imageRelation, index) => (
+              <Box
+                key={imageRelation.id}
+                sx={{
+                  flex: 1,
+                  backgroundImage: `url(${imageRelation.image.originalUrl})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.5s ease',
+                  filter: 'brightness(0.8)',
+                  '&:hover': {
+                    flex: 2,
+                    filter: 'brightness(1)',
+                  },
+                }}
+              />
+            ))}
+          </Box>
+        </Box>
+      )}
+
+      {/* Rooms Section - Reimagined */}
+      {property.roomTypes.length > 0 && (
+        <Container maxWidth="xl" sx={{ py: { xs: 10, md: 15 } }}>
+          <Box sx={{ textAlign: 'center', mb: 10 }}>
+            <Typography
+              sx={{
+                fontWeight: 700,
+                fontSize: { xs: '2.5rem', md: '4rem' },
+                color: pitchBlackTheme.text,
+                mb: 4,
+                textTransform: 'uppercase',
+                letterSpacing: '0.02em',
+                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+              }}
+            >
+              Signature Accommodations
+            </Typography>
+            <Typography
+              sx={{
+                color: pitchBlackTheme.textSecondary,
+                fontSize: '1.2rem',
+                maxWidth: '700px',
+                mx: 'auto',
+                lineHeight: 1.6,
+              }}
+            >
+              Each room is a masterpiece of design and comfort, crafted for the most discerning guests
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {property.roomTypes.map((roomType, index) => (
+              <Box
+                key={roomType.id}
+                sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'column', lg: index % 2 === 0 ? 'row' : 'row-reverse' },
+                  alignItems: 'center',
+                  gap: 8,
+                  minHeight: '500px',
+                }}
+              >
+                {/* Image Section */}
+                <Box
+                  sx={{
+                    flex: 1,
+                    height: { xs: '400px', lg: '500px' },
+                    width: '100%',
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      backgroundImage: `url(${roomType.images[0]?.image.originalUrl || primaryImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      transition: 'all 0.5s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                      },
+                    }}
+                  />
+                  
+                  {/* Price overlay */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 20,
+                      right: 20,
+                      backgroundColor: pitchBlackTheme.accent,
+                      color: 'white',
+                      px: 3,
+                      py: 2,
+                      fontSize: '1.2rem',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {formatCurrency(roomType.baseRate, roomType.currency)}
+                    <Typography sx={{ fontSize: '0.8rem', opacity: 0.8 }}>per night</Typography>
+                  </Box>
+                </Box>
+
+                {/* Content Section */}
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    px: { xs: 0, lg: 4 },
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: { xs: '2rem', md: '2.5rem' },
+                      color: pitchBlackTheme.text,
+                      mb: 3,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.02em',
+                      fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+                    }}
+                  >
+                    {roomType.displayName}
+                  </Typography>
+
+                  <Box sx={{ display: 'flex', gap: 6, mb: 4 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <People sx={{ fontSize: 20, color: pitchBlackTheme.accent }} />
+                      <Typography sx={{ color: pitchBlackTheme.textSecondary, fontWeight: 600 }}>
+                        Up to {roomType.maxOccupancy} guests
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Bed sx={{ fontSize: 20, color: pitchBlackTheme.accent }} />
+                      <Typography sx={{ color: pitchBlackTheme.textSecondary, fontWeight: 600 }}>
+                        {roomType._count.rooms} available
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Typography
+                    sx={{
+                      color: pitchBlackTheme.textSecondary,
+                      mb: 6,
+                      lineHeight: 1.7,
+                      fontSize: '1.1rem',
+                      maxWidth: '500px',
+                    }}
+                  >
+                    {roomType.description}
+                  </Typography>
+
+                  <Button
+                    component={Link}
+                    href={`/properties/${property.slug}/rooms/${roomType.id}`}
+                    endIcon={<ArrowForward />}
+                    sx={{
+                      backgroundColor: pitchBlackTheme.primary,
+                      color: pitchBlackTheme.text,
+                      border: `2px solid ${pitchBlackTheme.text}`,
+                      px: 6,
+                      py: 2.5,
+                      fontWeight: 900,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.15em',
+                      borderRadius: 0,
+                      fontFamily: '"Arial Black", "Helvetica", sans-serif',
+                      alignSelf: 'flex-start',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        backgroundColor: pitchBlackTheme.primaryHover,
+                        borderColor: pitchBlackTheme.primaryHover,
+                        color: pitchBlackTheme.primary,
+                        transform: 'translateY(-3px)',
+                      },
+                    }}
+                  >
+                    Explore Room
+                  </Button>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </Container>
+      )}
+
+      {/* Contact Section - Minimalist */}
+      <Box sx={{ backgroundColor: pitchBlackTheme.surface, py: { xs: 10, md: 15 } }}>
+        <Container maxWidth="xl">
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Typography
+              sx={{
+                fontWeight: 700,
+                fontSize: { xs: '2.5rem', md: '4rem' },
+                color: pitchBlackTheme.text,
+                mb: 4,
+                textTransform: 'uppercase',
+                letterSpacing: '0.02em',
+                fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+              }}
+            >
+              Contact
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              gap: 8,
+            }}
+          >
+            <Box sx={{ textAlign: 'center', minWidth: '200px' }}>
               <Phone sx={{ fontSize: 40, color: pitchBlackTheme.accent, mb: 2 }} />
               <Typography 
                 sx={{ 
@@ -452,22 +596,9 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
               <Typography sx={{ color: pitchBlackTheme.textSecondary }}>
                 {property.phone || '+1 (555) 123-4567'}
               </Typography>
-            </Card>
-            <Card
-              sx={{
-                backgroundColor: pitchBlackTheme.surface,
-                border: `1px solid ${pitchBlackTheme.border}`,
-                borderRadius: 0,
-                p: 3,
-                textAlign: 'center',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  borderColor: pitchBlackTheme.text,
-                  transform: 'translateY(-4px)',
-                  boxShadow: `0 8px 24px ${pitchBlackTheme.selectedBg}`,
-                },
-              }}
-            >
+            </Box>
+
+            <Box sx={{ textAlign: 'center', minWidth: '200px' }}>
               <Email sx={{ fontSize: 40, color: pitchBlackTheme.accent, mb: 2 }} />
               <Typography 
                 sx={{ 
@@ -484,22 +615,9 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
               <Typography sx={{ color: pitchBlackTheme.textSecondary }}>
                 {property.email || `info@${slug}.com`}
               </Typography>
-            </Card>
-            <Card
-              sx={{
-                backgroundColor: pitchBlackTheme.surface,
-                border: `1px solid ${pitchBlackTheme.border}`,
-                borderRadius: 0,
-                p: 3,
-                textAlign: 'center',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  borderColor: pitchBlackTheme.text,
-                  transform: 'translateY(-4px)',
-                  boxShadow: `0 8px 24px ${pitchBlackTheme.selectedBg}`,
-                },
-              }}
-            >
+            </Box>
+
+            <Box sx={{ textAlign: 'center', minWidth: '200px' }}>
               <LocationOn sx={{ fontSize: 40, color: pitchBlackTheme.accent, mb: 2 }} />
               <Typography 
                 sx={{ 
@@ -516,11 +634,13 @@ const PropertyPage: React.FC<PropertyPageProps> = async ({ params }) => {
               <Typography sx={{ color: pitchBlackTheme.textSecondary }}>
                 {property.address || `${property.city}${property.state ? ', ' + property.state : ''}, ${property.country}`}
               </Typography>
-            </Card>
+            </Box>
           </Box>
-        </Box>
+        </Container>
+      </Box>
 
-        {/* CTA Section */}
+      {/* CTA Section - Keep as requested */}
+      <Container maxWidth="xl" sx={{ py: { xs: 8, md: 12 } }}>
         <Box
           sx={{
             textAlign: 'center',

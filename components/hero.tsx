@@ -21,7 +21,7 @@ const pitchBlackTheme = {
   primary: '#000000',
   primaryHover: '#ffffff',
   text: '#ffffff',
-  textSecondary: '#6b7280',
+  textSecondary: '#ffffff', // Changed to white
   border: '#1a1a1a',
   selected: '#ffffff',
   selectedBg: 'rgba(255, 255, 255, 0.08)',
@@ -44,10 +44,10 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -95,7 +95,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
         console.error('Error tracking click:', error);
       }
     }
-    
+
     if (url) {
       window.location.href = url;
     }
@@ -148,7 +148,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
   };
 
   const titleParts = currentHero.title?.split('\n') || ['Experience Luxury', 'Beyond Imagination'];
-  
+
   return (
     <Box
       sx={{
@@ -235,7 +235,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
               <source src={currentHero.backgroundVideo} type="video/mp4" />
             </Box>
           )}
-          
+
           {/* Overlay Image */}
           {currentHero.overlayImage && (
             <Box
@@ -290,7 +290,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
               <ArrowBackIos />
             </IconButton>
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -393,11 +393,11 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: isMobile ? 0.2 : 0.4, duration: 0.6 }}
                 >
-                  <Stack 
-                    direction="row" 
-                    spacing={1} 
-                    justifyContent={currentHero.textAlignment === 'left' ? 'flex-start' : currentHero.textAlignment === 'right' ? 'flex-end' : 'center'} 
-                    alignItems="center" 
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    justifyContent={currentHero.textAlignment === 'left' ? 'flex-start' : currentHero.textAlignment === 'right' ? 'flex-end' : 'center'}
+                    alignItems="center"
                     sx={{ mb: 2 }}
                   >
                     {[...Array(5)].map((_, i) => (
@@ -412,22 +412,23 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                     ))}
                   </Stack>
                 </motion.div>
-                
+
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: isMobile ? 0.4 : 0.6, duration: 0.6 }}
                 >
-                  <Typography 
-                    variant="body1" 
-                    sx={{ 
-                      color: pitchBlackTheme.textSecondary, 
-                      mb: 3, 
-                      textTransform: 'uppercase', 
-                      fontWeight: 600, 
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      color: pitchBlackTheme.textSecondary,
+                      mb: 3,
+                      textTransform: 'uppercase',
+                      fontWeight: 600,
                       letterSpacing: { xs: 1, md: 2 },
                       fontSize: { xs: '0.75rem', md: '0.875rem' },
                       fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+                      textShadow: '0px 0px 8px rgba(0, 0, 0, 0.9), 0px 0px 4px rgba(0, 0, 0, 0.7)', // Added text shadow
                     }}
                   >
                     {currentHero.subtitle}
@@ -447,7 +448,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                 sx={{
                   fontWeight: 700,
                   mb: 4,
-                  textShadow: '2px 2px 8px rgba(0,0,0,0.8)',
+                  textShadow: '2px 2px 8px rgba(0,0,0,0.8), 0px 0px 10px rgba(0,0,0,0.6)', // Enhanced text shadow
                   fontSize: { xs: '2.5rem', md: '4rem', lg: '5rem' },
                   lineHeight: { xs: 1.1, md: 1.1 },
                   color: currentHero.textColor || pitchBlackTheme.text,
@@ -460,7 +461,10 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                 {titleParts[1] && (
                   <>
                     <br />
-                    <Box component="span" sx={{ color: pitchBlackTheme.textSecondary }}>
+                    <Box component="span" sx={{
+                      color: pitchBlackTheme.textSecondary,
+                      textShadow: '0px 0px 8px rgba(0, 0, 0, 0.9), 0px 0px 4px rgba(0, 0, 0, 0.7)', // Added text shadow
+                    }}>
                       {titleParts[1]}
                     </Box>
                   </>
@@ -484,6 +488,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                     lineHeight: 1.6,
                     fontSize: { xs: '1rem', md: '1.125rem' },
                     fontWeight: 400,
+                    textShadow: '0px 0px 8px rgba(0, 0, 0, 0.9), 0px 0px 4px rgba(0, 0, 0, 0.7)', // Added text shadow
                   }}
                 >
                   {currentHero.description}
@@ -544,7 +549,7 @@ const Hero: React.FC<HeroProps> = ({ heroesData }) => {
                       </Button>
                     </motion.div>
                   )}
-                  
+
                   {currentHero.secondaryButtonText && (
                     <motion.div
                       whileHover={{ scale: isMobile ? 1.02 : 1.05, y: isMobile ? -2 : -5 }}

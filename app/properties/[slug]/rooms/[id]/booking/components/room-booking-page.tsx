@@ -43,6 +43,7 @@ import {
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookingFormData, PaymentModalState, PaymentStatusResponse, PricingBreakdown, RoomBookingClientProps } from '@/types/room-booking-types';
+import { AvailabilityCalendar } from './calendar-availability';
 
 // Pitch black theme with white hover effects
 const pitchBlackTheme = {
@@ -79,6 +80,8 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
     guestNotes: '',
   });
 
+  const [checkInDateObj, setCheckInDateObj] = useState<Date | null>(null);
+  const [checkOutDateObj, setCheckOutDateObj] = useState<Date | null>(null);
   const [nights, setNights] = useState(0);
 
   const [pricing, setPricing] = useState<PricingBreakdown>({
@@ -148,6 +151,21 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
       setIsCalculatingPrice(false);
     }
   }, [property.id, roomType.id, roomType.baseRate]);
+
+  // Update form data when date objects change
+  useEffect(() => {
+    if (checkInDateObj) {
+      const dateString = checkInDateObj.toISOString().split('T')[0];
+      setFormData(prev => ({ ...prev, checkInDate: dateString }));
+    }
+  }, [checkInDateObj]);
+
+  useEffect(() => {
+    if (checkOutDateObj) {
+      const dateString = checkOutDateObj.toISOString().split('T')[0];
+      setFormData(prev => ({ ...prev, checkOutDate: dateString }));
+    }
+  }, [checkOutDateObj]);
 
   // Calculate pricing when dates change
   useEffect(() => {
@@ -224,6 +242,27 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
     }
   }, [errors]);
 
+  const handleCheckInDateChange = useCallback((date: Date | null) => {
+    setCheckInDateObj(date);
+    
+    // Clear checkout date if it's before the new check-in date
+    if (date && checkOutDateObj && checkOutDateObj <= date) {
+      setCheckOutDateObj(null);
+    }
+    
+    if (errors.checkInDate) {
+      setErrors(prev => ({ ...prev, checkInDate: '' }));
+    }
+  }, [checkOutDateObj, errors.checkInDate]);
+
+  const handleCheckOutDateChange = useCallback((date: Date | null) => {
+    setCheckOutDateObj(date);
+    
+    if (errors.checkOutDate) {
+      setErrors(prev => ({ ...prev, checkOutDate: '' }));
+    }
+  }, [errors.checkOutDate]);
+
   const handleGuestCountChange = useCallback((type: 'adults' | 'children', increment: boolean) => {
     setFormData(prev => {
       const currentCount = prev[type];
@@ -251,16 +290,16 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
     }
     
     if (step === 1) {
-      if (!formData.checkInDate) newErrors.checkInDate = 'Check-in date is required';
-      if (!formData.checkOutDate) newErrors.checkOutDate = 'Check-out date is required';
+      if (!checkInDateObj) newErrors.checkInDate = 'Check-in date is required';
+      if (!checkOutDateObj) newErrors.checkOutDate = 'Check-out date is required';
       
-      const checkIn = new Date(formData.checkInDate);
-      const checkOut = new Date(formData.checkOutDate);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      if (checkIn < today) newErrors.checkInDate = 'Check-in date cannot be in the past';
-      if (checkOut <= checkIn) newErrors.checkOutDate = 'Check-out date must be after check-in date';
+      if (checkInDateObj && checkOutDateObj) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (checkInDateObj < today) newErrors.checkInDate = 'Check-in date cannot be in the past';
+        if (checkOutDateObj <= checkInDateObj) newErrors.checkOutDate = 'Check-out date must be after check-in date';
+      }
       
       const totalGuests = formData.adults + formData.children;
       if (totalGuests > roomType.maxOccupancy) {
@@ -270,7 +309,7 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [formData, roomType.maxOccupancy]);
+  }, [formData, checkInDateObj, checkOutDateObj, roomType.maxOccupancy]);
 
   const handleNext = () => {
     if (validateStep(activeStep)) {
@@ -321,7 +360,6 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
       if (axios.isAxiosError(error) && error.response?.data?.error) {
         errorMessage = error.response.data.error;
       } else if (error instanceof Error) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         errorMessage = error.message;
       }
       setPaymentModal({
@@ -345,7 +383,6 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
     }
   };
 
-  const minDate = new Date().toISOString().split('T')[0];
   const totalGuests = formData.adults + formData.children;
   const primaryImage = roomType.images?.[0] || 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=1920';
 
@@ -501,49 +538,25 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
                   Check-in & Check-out Dates
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 4 } }}>
-                  <TextField
-                    fullWidth
-                    label="Check-in Date"
-                    type="date"
-                    value={formData.checkInDate}
-                    onChange={(e) => handleInputChange('checkInDate', e.target.value)}
+                  <AvailabilityCalendar
+                    businessUnitId={property.id}
+                    roomTypeId={roomType.id}
+                    selectedDate={checkInDateObj}
+                    onDateChange={handleCheckInDateChange}
+                    label="Check-in Date *"
+                    minDate={new Date()}
                     error={!!errors.checkInDate}
                     helperText={errors.checkInDate || `Available from ${property.checkInTime || '3:00 PM'}`}
-                    required
-                    InputLabelProps={{ shrink: true }}
-                    inputProps={{ min: minDate }}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        backgroundColor: pitchBlackTheme.surface,
-                        '& fieldset': { borderColor: pitchBlackTheme.border },
-                        '&:hover fieldset': { borderColor: pitchBlackTheme.gold },
-                        height: '56px',
-                      },
-                      '& .MuiInputLabel-root': { color: pitchBlackTheme.textSecondary },
-                      '& .MuiInputBase-input': { color: pitchBlackTheme.text, fontSize: '1.1rem' },
-                    }}
                   />
-                  <TextField
-                    fullWidth
-                    label="Check-out Date"
-                    type="date"
-                    value={formData.checkOutDate}
-                    onChange={(e) => handleInputChange('checkOutDate', e.target.value)}
+                  <AvailabilityCalendar
+                    businessUnitId={property.id}
+                    roomTypeId={roomType.id}
+                    selectedDate={checkOutDateObj}
+                    onDateChange={handleCheckOutDateChange}
+                    label="Check-out Date *"
+                    minDate={checkInDateObj ? new Date(checkInDateObj.getTime() + 24 * 60 * 60 * 1000) : new Date()}
                     error={!!errors.checkOutDate}
                     helperText={errors.checkOutDate || `Check out by ${property.checkOutTime || '12:00 PM'}`}
-                    required
-                    InputLabelProps={{ shrink: true }}
-                    inputProps={{ min: formData.checkInDate || minDate }}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        backgroundColor: pitchBlackTheme.surface,
-                        '& fieldset': { borderColor: pitchBlackTheme.border },
-                        '&:hover fieldset': { borderColor: pitchBlackTheme.gold },
-                        height: '56px',
-                      },
-                      '& .MuiInputLabel-root': { color: pitchBlackTheme.textSecondary },
-                      '& .MuiInputBase-input': { color: pitchBlackTheme.text, fontSize: '1.1rem' },
-                    }}
                   />
                 </Box>
               </Box>
@@ -685,7 +698,7 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
               />
 
               {/* Live Pricing Preview */}
-              {(formData.checkInDate && formData.checkOutDate) && (
+              {(checkInDateObj && checkOutDateObj) && (
                 <Card sx={{ backgroundColor: pitchBlackTheme.surface, border: `1px solid ${pitchBlackTheme.border}`, mt: { xs: 2, md: 3 } }}>
                   <CardContent sx={{ p: { xs: 2, md: 3 } }}>
                     <Typography variant="h6" sx={{ color: pitchBlackTheme.gold, fontWeight: 600, mb: 2, fontSize: { xs: '1rem', md: '1.25rem' } }}>
@@ -763,7 +776,7 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
                     <Box sx={{ minWidth: '200px' }}>
                       <Typography variant="body2" sx={{ color: pitchBlackTheme.textSecondary }}>Check-in</Typography>
                       <Typography sx={{ color: pitchBlackTheme.text, fontWeight: 600 }}>
-                        {new Date(formData.checkInDate).toLocaleDateString('en-US', { 
+                        {checkInDateObj && checkInDateObj.toLocaleDateString('en-US', { 
                           weekday: 'short', 
                           month: 'short', 
                           day: 'numeric',
@@ -774,7 +787,7 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
                     <Box sx={{ minWidth: '200px' }}>
                       <Typography variant="body2" sx={{ color: pitchBlackTheme.textSecondary }}>Check-out</Typography>
                       <Typography sx={{ color: pitchBlackTheme.text, fontWeight: 600 }}>
-                        {new Date(formData.checkOutDate).toLocaleDateString('en-US', { 
+                        {checkOutDateObj && checkOutDateObj.toLocaleDateString('en-US', { 
                           weekday: 'short', 
                           month: 'short', 
                           day: 'numeric',
@@ -831,7 +844,10 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
                         {isCalculatingPrice ? (
                           <CircularProgress size={16} sx={{ color: pitchBlackTheme.text }} />
                         ) : (
-                          `₱${pricing.subtotal.toLocaleString()}`
+                          `₱${pricing.subtotal.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                          })}`
                         )}
                       </Typography>
                     </Box>
@@ -843,7 +859,10 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
                           {isCalculatingPrice ? (
                             <CircularProgress size={16} sx={{ color: pitchBlackTheme.text }} />
                           ) : (
-                            `₱${pricing.taxes.toLocaleString()}`
+                            `₱${pricing.taxes.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                          })}`
                           )}
                         </Typography>
                       </Box>
@@ -856,7 +875,10 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
                           {isCalculatingPrice ? (
                             <CircularProgress size={16} sx={{ color: pitchBlackTheme.text }} />
                           ) : (
-                            `₱${pricing.serviceFee.toLocaleString()}`
+                            `₱${pricing.serviceFee.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                          })}`
                           )}
                         </Typography>
                       </Box>
@@ -872,7 +894,10 @@ export function RoomBookingClient({ property, roomType }: RoomBookingClientProps
                         {isCalculatingPrice ? (
                           <CircularProgress size={24} sx={{ color: pitchBlackTheme.gold }} />
                         ) : (
-                          `₱${pricing.totalAmount.toLocaleString()}`
+                          `₱${pricing.totalAmount.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                          })}`
                         )}
                       </Typography>
                     </Box>
